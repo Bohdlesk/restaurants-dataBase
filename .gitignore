@@ -1,0 +1,5 @@
+/.idea/
+/client/
+/server/node_modules/
+/server/.env
+/server/first-database.iml
