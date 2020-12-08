@@ -129,7 +129,7 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
     }
 });
 
-app.post('/api/v1/restaurants/:id/giveFeedback', async (req, res) => {
+app.post('/api/v1/restaurants/:id', async (req, res) => {
     try {
         var id = req.params.id;
         var query = {
@@ -156,7 +156,9 @@ app.post('/api/v1/restaurants/:id/giveFeedback', async (req, res) => {
     }
 });
 
-app.post('/api/v1/restaurants/:id/giveFeedback', async (req, res) => {});
+app.post('/api/v1/restaurants/:id/giveFeedback', async (req, res) => {
+
+});
 
 const port = 3000;
 app.listen(port, () => {
