@@ -166,9 +166,12 @@ const rest = {name: 'kfc', city: 'kiyv'};
 restaurant.getInfo(5);
 
 restaurant.getInfo.call(rest, 4);
+restaurant.getInfo.apply(rest, [4]);
+// restaurant.getInfo.call(rest, 4);
+const f1 = restaurant.getInfo.bind(rest, 4);// bind не вызывает функцию а возвращает новую
 
 
-
-
+console.log('f1, bind')
+f1();
 
 
