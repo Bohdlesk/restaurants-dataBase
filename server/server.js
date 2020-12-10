@@ -158,9 +158,41 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 });
 
 //get restaurant reviewS
-app.post('/api/v1/restaurants/:id/rewiews', async (req, res) => {
+app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
     try{
+        var id = req.params.id;
+
+        var query = {
+            text: 'select id, name, feedback_text,stars from reviews where rest_id = $1',
+            values: [id]
+        }
+        const results = await db.query(query);
+        console.log(id);
+        // if (results.rows.length === 0){
+        //     res.status(404).json({
+        //         status: 'error'
+        //     });
+        //     //console.log(err);
+        // };
+        // try {
+        //     if (results.rows.length === 0){
+        //         res.status(404).json({
+        //             status: 'error'
+        //         });
+        //     }
+        // }catch (err) {
+        //   // console.log(err);
+        // }
+        // if (results.rows.length === 0){
+        //
+        // }
+        res.status(200).json({
+            status:  'succes',
+            'restaurant id': req.params.id,
+            results: results.rows
+        });
         //select * from reviews where rest_id = 1;
+
 
     } catch (err) {
         res.status(404).json({
@@ -168,6 +200,12 @@ app.post('/api/v1/restaurants/:id/rewiews', async (req, res) => {
         });
         console.log(err);
     }
+});
+app.get('/api/v1', (req, res) => {
+    console.log(404);
+    res.status(404).json({
+        status: '404',
+    });
 });
 
 const port = 3000;
