@@ -174,4 +174,16 @@ const f1 = restaurant.getInfo.bind(rest, 4);// bind не вызывает фун
 console.log('f1, bind')
 f1();
 
+//-----------
+
+function Class(name, age) {
+    this.name = name;
+    const voarst= this.age
+    ;
+    console.log(this.name)
+    console.log(voarst)
+}
+
+const human = new Class('bohdan :D', 19);
+
 
