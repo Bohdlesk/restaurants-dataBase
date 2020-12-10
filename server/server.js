@@ -129,7 +129,8 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
     }
 });
 
-app.post('/api/v1/restaurants/:id/review', async (req, res) => {
+//post restaurant review
+app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
     try {
         var id = req.params.id;
         var query = {
@@ -156,11 +157,19 @@ app.post('/api/v1/restaurants/:id/review', async (req, res) => {
     }
 });
 
-app.post('/api/v1/restaurants/:id/giveFeedback', async (req, res) => {
+//get restaurant reviewS
+app.post('/api/v1/restaurants/:id/rewiews', async (req, res) => {
+    try{
 
+    } catch (err) {
+        res.status(404).json({
+            status: 'error'
+        });
+        console.log(err);
+    }
 });
 
 const port = 3000;
 app.listen(port, () => {
-    console.log(`Server     is up and listening on port ${port}...`);
+    console.log(`Server is up and listening on port ${port}...`);
 });
