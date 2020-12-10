@@ -193,7 +193,6 @@ app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
         });
         //select * from reviews where rest_id = 1;
 
-
     } catch (err) {
         res.status(404).json({
             status: 'error'
