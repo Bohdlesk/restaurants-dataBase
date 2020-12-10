@@ -129,7 +129,7 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
     }
 });
 
-app.post('/api/v1/restaurants/:id', async (req, res) => {
+app.post('/api/v1/restaurants/:id/review', async (req, res) => {
     try {
         var id = req.params.id;
         var query = {
