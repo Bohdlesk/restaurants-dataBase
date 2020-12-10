@@ -243,8 +243,19 @@ console.log(calculator1.sum());
 console.log(calculator1.mul());
 
 
+function Accumulator (startingValue){
+    this.value = startingValue;
+    this.read = function (val) {
+        this.value += val;
+        return this.value;;
+    }
+}
 
-
+let accumulator = new Accumulator(1);
+console.log(accumulator.read(3));
+console.log(accumulator.read(3));
+console.log(accumulator.read(3));
+console.log(accumulator.value)
 
 
 
