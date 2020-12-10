@@ -29,9 +29,9 @@ const avgPhysics = students.reduce( function (acum, student) {
 
 // console.log(avgPhysics);
 
-function func(){
-  this.name = 'yura';
-};
+// function func(){
+//   this.name = 'yura';
+// };
 
 // console.log(new func());
 
@@ -207,6 +207,40 @@ let calculator = {
 // calculator.read(1,3);
 // console.log( calculator.sum() );
 // console.log( calculator.mul() );
+
+
+
+function Cat(name, color) {
+    this.name = name;
+    this.color = color;
+}
+
+let cat = new Cat('bars', 'red');
+
+// function
+
+// console.log(Cat.);
+
+function Calculator (a,b){
+    this.a = a;
+    this.b = b;
+    this.read = function(a, b){
+        this.a = a;
+        this.b = b;
+    };
+    this.sum = function(){
+        return this.a + this.b;
+    };
+    this.mul = function(){
+        return this.a * this.b;
+    };
+
+}
+
+let calculator1 = new Calculator(2, 3);
+calculator1.read(1, 3);
+console.log(calculator1.sum());
+console.log(calculator1.mul());
 
 
 
