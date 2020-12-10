@@ -160,6 +160,7 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 //get restaurant reviewS
 app.post('/api/v1/restaurants/:id/rewiews', async (req, res) => {
     try{
+        //select * from reviews where rest_id = 1;
 
     } catch (err) {
         res.status(404).json({
