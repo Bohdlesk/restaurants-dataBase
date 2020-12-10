@@ -159,71 +159,23 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 
 //get restaurant reviewS
 app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
-    // try {
-    //
-    //     // res.status(200).json({
-    //     //     r : results.rows.length===2
-    //     // })
-    // }catch (err) {
-    //     res.status(404).json({
-    //         status: 'error'
-    //     });
-    //   //  console.log(err);
-    // };
-
-    // try {
-    //
-    //         //console.log(err);
-    //     }
-    // }catch (err) {
-    //     res.status(404).json({
-    //         status: 'error'
-    //     });
-    //    console.log(err);
-    // }
-
     try {
         var id = req.params.id;
-
         var query = {
             text: 'select id, name, feedback_text,stars from reviews where rest_id = $1',
             values: [id]
         }
         var results = await db.query(query);
         if (results.rows.length === 0) {
-            // console.log('test')
             res.status(404).json({
                 status: 'error'
             })
         } else {
-
-            // console.log('test');
-            // if (results.rows.length === 0){
-            //     res.status(404).json({
-            //         status: 'error'
-            //     });
-            //     //console.log(err);
-            // };
-            // try {
-            //     if (results.rows.length === 0){
-            //         res.status(404).json({
-            //             status: 'error'
-            //         });
-            //     }
-            // }catch (err) {
-            //   // console.log(err);
-            // }
-            // if (results.rows.length === 0){
-            //
-            // }
             var rating = 0;
             for (i in results.rows) {
                 rating += results.rows[i].stars;
             }
-            // console.log(i);
-            // console.log(rating1)
             rating = rating / (++i);
-            // console.log(17/5)
             res.status(200).json({
                 status: 'succes',
                 'restaurant id': req.params.id,
@@ -231,13 +183,11 @@ app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
                 results: results.rows
             });
         }
-        //select * from reviews where rest_id = 1;
-
     } catch (err) {
         res.status(404).json({
             status: 'error'
         });
-        // console.log(err);
+        console.log(err);
     }
 });
 app.get('/api/v1', (req, res) => {
