@@ -186,4 +186,31 @@ function Class(name, age) {
 
 const human = new Class('bohdan :D', 19);
 
+let calculator = {
+    a: a,
+    b: b,
+    //(читать) запрашивает два значения и сохраняет их как свойства объекта.
+    read(a, b){
+        this.a = a;
+        this.b = b;
+    },
+    //(суммировать) возвращает сумму сохранённых значений.
+    sum(){
+        return this.a + this.b;
+    },
+    //(умножить) перемножает сохранённые значения и возвращает результат.
+    mul(){
+        return this.a * this.b;
+    }
+};
+
+// calculator.read(1,3);
+// console.log( calculator.sum() );
+// console.log( calculator.mul() );
+
+
+
+
+
+
 
