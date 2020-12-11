@@ -113,14 +113,24 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
 app.delete('/api/v1/restaurants/:id', async (req, res) => {
     try {
         var id = req.params.id;
-        var query = {
-            text: 'delete from restaurants where id = $1;',
-            values: [id]
+        const results = await db.query(
+            "select * from restaurants where id = $1", [req.params.id]
+        );
+        if (results.rows.length === 0) {
+            res.status(404).json({
+                status: 'error',
+                message: 'rastaurant not found'
+            })
+        } else {
+            var query = {
+                text: 'delete from restaurants where id = $1;',
+                values: [id]
+            }
+            // const results = await db.query(query);
+            res.status(204).json({
+                status: 'succes'
+            })
         }
-        // const results = await db.query(query);
-        res.status(204).json({
-            status: 'succes'
-        })
     } catch (err) {
         res.status(404).json({
             status: 'error'
@@ -164,12 +174,11 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
                 }
             })
         }
-    }
-        catch (err) {
-            res.status(404).json({
-                status: 'error'
-            });
-            console.log(err);
+    } catch (err) {
+        res.status(404).json({
+            status: 'error'
+        });
+        console.log(err);
     }
 
 })
