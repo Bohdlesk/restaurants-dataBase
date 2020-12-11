@@ -49,11 +49,11 @@ app.get('/api/v1/restaurants/:id', async (req, res) => {
 // create a restaurant
 app.post('/api/v1/restaurants', async (req, res) => {
     try {
-        const query = {
+        let query = {
             text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
             values: [req.body.name, req.body.location, req.body.price_range]
         }
-        const results = await db.query(query);
+            // const results = await db.query(query);
         res.status(201).json({
             status: 'succes',
             data: {
@@ -90,10 +90,10 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
                 values: [req.body.price_range, id]
             }
         }
-        const results = await db.query(query.dataBaseRow);
-        const name = await db.query(query.changeDbRowName);
-        const location = await db.query(query.changeDbRowLocation);
-        const price_range = await db.query(query.changeDbRowPrice_range);
+        // const results = await db.query(query.dataBaseRow);
+        // const name = await db.query(query.changeDbRowName);
+        // const location = await db.query(query.changeDbRowLocation);
+        // const price_range = await db.query(query.changeDbRowPrice_range);
 
         res.status(200).json({
             status: 'succes',
@@ -117,7 +117,7 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
             text: 'delete from restaurants where id = $1;',
             values: [id]
         }
-        const results = await db.query(query);
+        // const results = await db.query(query);
         res.status(204).json({
             status: 'succes'
         })
@@ -138,7 +138,7 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
             text: 'INSERT INTO reviews (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4);',
             values: [id, req.body.name, req.body.feedback_text, req.body.stars]
         }
-        const results = await db.query(query);
+        // const results = await db.query(query);
         res.status(200).json({
             status: 'succes',
             data: {
@@ -197,7 +197,6 @@ app.get('/api/v1', (req, res) => {
         status: '404',
     });
 });
-
 
 const port = 3000;
 app.listen(port, () => {
