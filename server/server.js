@@ -4,7 +4,7 @@ var morgan = require('morgan');
 // const db = require('./elephantsql');
 var pg = require('pg');
 
-var conString = "Ipostgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy"
+var conString = "Ipostgres://fosjswqy:"
 var client = new pg.Client(conString);
 const app = express();
 
