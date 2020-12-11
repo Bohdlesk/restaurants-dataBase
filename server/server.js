@@ -53,7 +53,7 @@ app.post('/api/v1/restaurants', async (req, res) => {
             text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
             values: [req.body.name, req.body.location, req.body.price_range]
         }
-            // const results = await db.query(query);
+        // const results = await db.query(query);
         res.status(201).json({
             status: 'succes',
             data: {
@@ -132,31 +132,48 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
 //post restaurant review
 // need add errors
 app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
+
     try {
         var id = req.params.id;
+
         var query = {
-            text: 'INSERT INTO reviews (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4);',
-            values: [id, req.body.name, req.body.feedback_text, req.body.stars]
+            text: 'select * from reviews where rest_id = $1',
+            values: [id]
         }
-        // const results = await db.query(query);
-        res.status(200).json({
-            status: 'succes',
-            data: {
-                reviews: {
-                    rest_id: id,
-                    name: req.body.name,
-                    feedback_text: req.body.feedback_text,
-                    stars: req.body.stars
-                }
+        var results = await db.query(query);
+        if (results.rows.length === 0) {
+            res.status(404).json({
+                status: 'error',
+                message: 'rastaurant not found'
+            })
+        } else {
+            var query = {
+                text: 'INSERT INTO reviews (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4);',
+                values: [id, req.body.name, req.body.feedback_text, req.body.stars]
             }
-        });
-    } catch (err) {
-        res.status(404).json({
-            status: 'error'
-        });
-        console.log(err);
+            // const results = await db.query(query);
+            res.status(200).json({
+                status: 'succes',
+                data: {
+                    reviews: {
+                        rest_id: id,
+                        name: req.body.name,
+                        feedback_text: req.body.feedback_text,
+                        stars: req.body.stars,
+                    }
+                }
+            })
+        }
     }
-});
+        catch (err) {
+            res.status(404).json({
+                status: 'error'
+            });
+            console.log(err);
+    }
+
+})
+;
 
 //get restaurant reviewS
 app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
@@ -169,7 +186,8 @@ app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
         var results = await db.query(query);
         if (results.rows.length === 0) {
             res.status(404).json({
-                status: 'error'
+                status: 'error',
+                message: 'restaurant not found'
             })
         } else {
             var rating = 0;
@@ -180,7 +198,7 @@ app.get('/api/v1/restaurants/:id/rewiews', async (req, res) => {
             res.status(200).json({
                 status: 'succes',
                 'restaurant id': req.params.id,
-                rating: rating,
+                'restaurnt rating': rating,
                 results: results.rows
             });
         }
