@@ -130,6 +130,7 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
 });
 
 //post restaurant review
+// need add errors
 app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
     try {
         var id = req.params.id;
