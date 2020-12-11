@@ -93,12 +93,12 @@ app.post('/api/v1/restaurants', (req, res) => {
             if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
                 checker++;
                 console.log('test point for')
-                console.log(checker)
+                // console.log(checker)
                 break;
             }
         }
-        console.log('point')
-        console.log(checker)
+        // console.log('point')
+        // console.log(checker)
         if (checker > 0) {
             console.log('test')
             res.status(404).json({
@@ -112,8 +112,7 @@ app.post('/api/v1/restaurants', (req, res) => {
             //     //     }
             //insert into "public"."restaurants" (name, location, price_range) values ('rest', 'loc', 3);
             client.query('INSERT INTO "public"."restaurants" (name, location, price_range) values ($1, $2, $3)', [
-                req.body.name, req.body.location, req.body.price_range
-            ], function (err, result) {
+                req.body.name, req.body.location, req.body.price_range], function (err, result) {
                 if (err) {
                     return console.error('error running query', err);
                 }
@@ -177,7 +176,7 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
     //DELETE FROM "public"."restaurants" WHERE id = '3'
     let id = req.params.id;
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
-        console.log('t estw')
+        // console.log('t estw')
         if (err) {
 
             return console.error('error running query', err);
@@ -194,57 +193,63 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
                     return console.error('error running query', err);
                 }
             })
-            res.status(200).json({
+            res.status(204).json({
                 status: 'succes'
             })
         }
     });
 });
 
-    // const results = await db.query(
-    //  "select * from restaurants where id = $1", [req.params.id]
-    //  );
-    //     if (results.rows.length === 0) {
-    //         res.status(404).json({
-    //             status: 'error',
-    //             message: 'rastaurant not found'
-    //         })
-    //     } else {
-    //         var query = {
-    //             text: 'delete from restaurants where id = $1;',
-    //             values: [id]
-    //         }
-    //         // const results = await db.query(query);
-    //         res.status(204).json({
-    //             status: 'succes'
-    //         })
-    //     }
-    // } catch (err) {
-    //     res.status(404).json({
-    //         status: 'error'
-    //     });
-    //     console.log(err);
-    // }
+// const results = await db.query(
+//  "select * from restaurants where id = $1", [req.params.id]
+//  );
+//     if (results.rows.length === 0) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'rastaurant not found'
+//         })
+//     } else {
+//         var query = {
+//             text: 'delete from restaurants where id = $1;',
+//             values: [id]
+//         }
+//         // const results = await db.query(query);
+//         res.status(204).json({
+//             status: 'succes'
+//         })
+//     }
+// } catch (err) {
+//     res.status(404).json({
+//         status: 'error'
+//     });
+//     console.log(err);
+// }
 
 
 // get a restaurant (ONE)
-app.get('/api/v1/restaurants/:id', async (req, res) => {
-    try {
-        const results = await db.query(
-            "select * from restaurants where id = $1", [req.params.id]
-        );
-        res.status(200).json({
-            status: 'succes',
-            data: {
-                restaurant: results.rows[0]
-            },
-        });
-    } catch (err) {
-        res.status(404).json({
-            status: 'error'
-        });
-        console.log(err)
-    }
+app.get('/api/v1/restaurants/:id', (req, res) => {
+    //SELECT * FROM "public"."restaurants" WHERE id = 22
+
+    let id = req.params.id;
+    client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
+        console.log('t estw')
+        if (err) {
+
+            return console.error('error running query', err);
+        }
+
+        if (result.rows.length === 0) {
+            res.status(404).json({
+                status: 'error',
+                message: 'restaurant is not found'
+            })
+        } else {
+            res.status(200).json({
+                status: 'succes',
+                restaurant: result.rows
+            });
+        }
+    });
 });
 
 
