@@ -72,35 +72,46 @@ app.post('/api/v1/restaurants', async (req, res) => {
 app.post('/api/v1/restaurants/:id', async (req, res) => {
     var id = req.params.id;
     try {
-        const query = {
-            dataBaseRow: {
-                text: "select * from restaurants where id = $1;",
-                values: [id]
-            },
-            changeDbRowName: {
-                text: "UPDATE restaurants SET name = $1 WHERE id = $2;",
-                values: [req.body.name, id]
-            },
-            changeDbRowLocation: {
-                text: "UPDATE restaurants SET location = $1 WHERE id = $2;",
-                values: [req.body.location, id]
-            },
-            changeDbRowPrice_range: {
-                text: "UPDATE restaurants SET price_range = $1 WHERE id = $2;",
-                values: [req.body.price_range, id]
+        const results = await db.query(
+            "select * from restaurants where id = $1", [req.params.id]
+        );
+        if (results.rows.length === 0) {
+            res.status(404).json({
+                status: 'error',
+                message: 'rastaurant not found'
+            })
+        } else {
+            const query = {
+                // dataBaseRow: {
+                //     text: "select * from restaurants where id = $1;",
+                //     values: [id]
+                // },
+                changeDbRowName: {
+                    text: "UPDATE restaurants SET name = $1 WHERE id = $2;",
+                    values: [req.body.name, id]
+                },
+                changeDbRowLocation: {
+                    text: "UPDATE restaurants SET location = $1 WHERE id = $2;",
+                    values: [req.body.location, id]
+                },
+                changeDbRowPrice_range: {
+                    text: "UPDATE restaurants SET price_range = $1 WHERE id = $2;",
+                    values: [req.body.price_range, id]
+                }
             }
-        }
-        // const results = await db.query(query.dataBaseRow);
-        // const name = await db.query(query.changeDbRowName);
-        // const location = await db.query(query.changeDbRowLocation);
-        // const price_range = await db.query(query.changeDbRowPrice_range);
 
-        res.status(200).json({
-            status: 'succes',
-            data: {
-                restaurant: req.body
-            }
-        });
+            // const results = await db.query(query.dataBaseRow);
+            // const name = await db.query(query.changeDbRowName);
+            // const location = await db.query(query.changeDbRowLocation);
+            // const price_range = await db.query(query.changeDbRowPrice_range);
+
+            res.status(200).json({
+                status: 'succes',
+                data: {
+                    restaurant: req.body
+                }
+            });
+        }
     } catch (err) {
         res.status(404).json({
             status: 'error'
