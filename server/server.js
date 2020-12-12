@@ -114,7 +114,12 @@ app.post('/api/v1/restaurants', (req, res) => {
                 status: 'error',
                 message: 'restaurant with this name in this locatin is already created'
             })
-        } else {
+        } else if(!((req.body.price_range > 0) && (req.body.price_range < 6))){
+            res.status(404).json({
+                status: 'error',
+                message: 'wrong price range value'
+            })
+        }else {
             // const query = {
             //     //         text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
             //     //         values: [req.body.name, req.body.location, req.body.price_range],
@@ -201,10 +206,11 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
                 if (err) {
                     return console.error('error running query', err);
                 }
-            })
-            res.status(204).json({
-                status: 'success'
-            })
+                res.status(204).json({
+                    status: 'success'
+                })
+            });
+
         }
     });
 });
@@ -331,7 +337,12 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
                 status: 'error',
                 message: 'restaurant is not found'
             })
-        } else {
+        } else if (!((req.body.stars > 0) && (req.body.stars < 6))){
+            res.status(404).json({
+                status: 'error',
+                message: 'wrong stars value'
+            })
+        }else {
             client.query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
                 [id, req.body.name, req.body.feedback_text, req.body.stars], function (err, result) {
                     if (err) {
