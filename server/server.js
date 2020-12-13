@@ -3,10 +3,15 @@ var express = require('express');
 var morgan = require('morgan');
 // const db = require('./elephantsql');
 var pg = require('pg');
+// const cors = require('cors');
+
+
+const app = express();
+// app.use(cors());
 
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 var client = new pg.Client(conString);
-const app = express();
+
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -14,15 +19,17 @@ app.use(function(req, res, next) {
     next();
 });
 //
+
+// app.use(express.json());
+
 // app.options('/url...', function(req, res, next){
 //     res.header('Access-Control-Allow-Origin', "*");
-//     res.header('Access-Control-Allow-Methods', 'POST');
-//     res.header("Access-Control-Allow-Headers", "accept, content-type");
+//     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
+//     res.header("Access-Control-Allow-Headers", "*");
 //     res.header("Access-Control-Max-Age", "1728000");
 //     return res.sendStatus(200);
 // });
 
-// app.use(express.json());
 
 client.connect(function (err) {
 
@@ -43,6 +50,7 @@ client.connect(function (err) {
 
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
+    // res.set('Access-Control-Allow-Origin', '*');
     // const results = await db.query("select * from restaurants");
 
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
