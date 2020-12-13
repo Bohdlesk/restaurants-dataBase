@@ -7,36 +7,38 @@ const cors = require('cors');
 
 
 const app = express();
+// app.use(express.json());
 
-// const corsOption = {
-//     origin : '*',
-//     optionsSuccessStatus:200
-// }
-// app.use (cors(corsOption))
-app.use(cors());
+const corsOptions = {
+    origin : '*',
+    optionsSuccessStatus:200
+}
+app.use (cors(corsOptions))
 
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 var client = new pg.Client(conString);
 
-
+//
 // app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Origin", "http://localhost:3000/");
 //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     console.log('t');
 //     next();
 // });
-//
 
-// app.use(express.json());
+
+
 
 // app.use(function(req, res, next){
 //     res.header('Access-Control-Allow-Origin', "*");
 //     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
 //     res.header("Access-Control-Allow-Headers", "*");
 //     res.header("Access-Control-Max-Age", "1728000");
+//     console.log('t')
 //     return res.sendStatus(200);
 // });
 
-
+/////////////////
 client.connect(function (err) {
 
     if (err) {
@@ -52,12 +54,15 @@ client.connect(function (err) {
         // client.end();
     });
 });
+//////////////////////////
 
+// app.get('/api/v1/restaurants', cors(corsOptions), (req, res, next) => {
+//     console.log('work bitch!!!!!!!!1')
+//     res.json({msg: 'This is CORS-enabled for a Single Route'})
+// });
 
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
-    // res.set('Access-Control-Allow-Origin', '*');
-    // const results = await db.query("select * from restaurants");
 
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
 
@@ -77,22 +82,16 @@ app.get('/api/v1/restaurants', (req, res) => {
             });
         }
     })
-    // } catch (err) {
-    //     res.status(404).json({
-    //         status: 'error'
-    //     });
-    //     console.log(err);
-    // }
 });
 
 // create a restaurant
 app.post('/api/v1/restaurants', (req, res) => {
+    console.log('hi world')
     var checker = 0;
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
         if (err) {
             return console.error('error running query', err);
         }
-        // console.log('test point for 1')
 
         for (let i in result.rows) {
             if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
