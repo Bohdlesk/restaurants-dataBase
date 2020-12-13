@@ -8,7 +8,13 @@ var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.
 var client = new pg.Client(conString);
 const app = express();
 
-app.use(express.json());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "localhost"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+// app.use(express.json());
 
 client.connect(function (err) {
 
@@ -96,9 +102,10 @@ app.post('/api/v1/restaurants', (req, res) => {
             //     test = null
             // }
 
-            client.query('INSERT INTO "public"."restaurants" (name, location, price_range, website) values' +
-                ' ($1, $2, $3, $4)', [
-                req.body.name, req.body.location, req.body.price_range, req.body.website], function (err, result) {
+            client.query(
+                'INSERT INTO "public"."restaurants" (name, location, price_range, website) values ($1, $2, $3, $4)',
+                [req.body.name, req.body.location, req.body.price_range, req.body.website],
+                function (err, result) {
                 if (err) {
                     return console.error('error running query', err);
                 }
