@@ -171,6 +171,11 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 status: 'error',
                 message: 'restaurant is not found'
             })
+        } else if ((req.body.price_range > 5) || (req.body.price_range  < 1)){
+            res.status(404).json({
+                status: 'error',
+                message: 'price_range out of range'
+            })
         } else {
             client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
                 id], function (err, result) {
@@ -191,7 +196,10 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 id], function (err, result) {
 
                 if (err) {
+                    // res.status(404);
+                    // console.log('test')
                     return console.error('error running query', err);
+
                 }
 
             })
