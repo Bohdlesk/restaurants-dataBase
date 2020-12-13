@@ -8,7 +8,7 @@ var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.
 var client = new pg.Client(conString);
 const app = express();
 
-app.use(function(req, res, next) {
+app.use('/url...',function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
