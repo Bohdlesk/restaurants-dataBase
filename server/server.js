@@ -4,7 +4,7 @@ var morgan = require('morgan');
 // const db = require('./elephantsql');
 var pg = require('pg');
 
-var conString = "postgres://fosjswqy:"
+var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 var client = new pg.Client(conString);
 const app = express();
 
@@ -64,7 +64,7 @@ app.post('/api/v1/restaurants', (req, res) => {
         if (err) {
             return console.error('error running query', err);
         }
-        console.log('test point for 1')
+        // console.log('test point for 1')
 
         for (let i in result.rows) {
             if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
@@ -197,8 +197,9 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
             })
 
             res.status(200).json({
-                status: 'success',
-                restaurant: req.body
+                status: 'success'
+                // restaurant: req.body
+
             });
 
         }
@@ -271,7 +272,7 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
             res.status(200).json({
                 status: 'success',
                 'restaurant id': req.params.id,
-                'restaurnt rating': rating,
+                'restaurant rating': rating,
                 results: result.rows
             });
         }
