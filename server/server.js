@@ -9,18 +9,18 @@ var client = new pg.Client(conString);
 const app = express();
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "localhost"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
-app.get('/', function(req, res, next) {
-    // Handle the get for this route
-});
-
-app.post('/', function(req, res, next) {
-    // Handle the post for this route
-});
+//
+// app.options('/url...', function(req, res, next){
+//     res.header('Access-Control-Allow-Origin', "*");
+//     res.header('Access-Control-Allow-Methods', 'POST');
+//     res.header("Access-Control-Allow-Headers", "accept, content-type");
+//     res.header("Access-Control-Max-Age", "1728000");
+//     return res.sendStatus(200);
+// });
 
 // app.use(express.json());
 
