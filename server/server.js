@@ -89,8 +89,16 @@ app.post('/api/v1/restaurants', (req, res) => {
             //     //         text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
             //     //         values: [req.body.name, req.body.location, req.body.price_range],
             //     //     }
-            client.query('INSERT INTO "public"."restaurants" (name, location, price_range) values ($1, $2, $3)', [
-                req.body.name, req.body.location, req.body.price_range], function (err, result) {
+
+            // console.log(req.body.website)
+            // let test = req.body.websitel
+            // if(test === {}){
+            //     test = null
+            // }
+
+            client.query('INSERT INTO "public"."restaurants" (name, location, price_range, website) values' +
+                ' ($1, $2, $3, $4)', [
+                req.body.name, req.body.location, req.body.price_range, req.body.website], function (err, result) {
                 if (err) {
                     return console.error('error running query', err);
                 }
@@ -193,6 +201,17 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
 
             })
             client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
+                id], function (err, result) {
+
+                if (err) {
+                    // res.status(404);
+                    // console.log('test')
+                    return console.error('error running query', err);
+
+                }
+
+            })
+            client.query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
                 id], function (err, result) {
 
                 if (err) {
