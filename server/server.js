@@ -3,26 +3,31 @@ var express = require('express');
 var morgan = require('morgan');
 // const db = require('./elephantsql');
 var pg = require('pg');
-// const cors = require('cors');
+const cors = require('cors');
 
 
 const app = express();
-// app.use(cors());
+
+const corsOption = {
+    origin : '*',
+    optionsSuccessStatus:200
+}
+app.use (cors(corsOption))
 
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 var client = new pg.Client(conString);
 
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+// app.use(function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
 //
 
 // app.use(express.json());
 
-// app.options('/url...', function(req, res, next){
+// app.use(function(req, res, next){
 //     res.header('Access-Control-Allow-Origin', "*");
 //     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
 //     res.header("Access-Control-Allow-Headers", "*");
