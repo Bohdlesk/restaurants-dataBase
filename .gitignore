@@ -2,4 +2,4 @@
 /server/node_modules/
 /server/.env
 /server/first-database.iml
-/server/elephantsql.js
+/server/elephantsql.jsheroku login
