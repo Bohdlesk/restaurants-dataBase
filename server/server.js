@@ -52,7 +52,7 @@ client.connect(function (err) {
         }
 
         console.log(result.rows[0].theTime);
-        // client.end();
+        client.end();
     });
 });
 //////////////////////////
@@ -82,6 +82,7 @@ app.get('/api/v1/restaurants', (req, res) => {
                 restaurants: result.rows
             });
         }
+        client.end();
     })
 });
 
@@ -135,6 +136,7 @@ app.post('/api/v1/restaurants', (req, res) => {
                     status: 'success',
                     restaurants: req.body
                 });
+                    client.end();
             })
         }
     })
