@@ -345,7 +345,7 @@ app.get('/api/v1', (req, res) => {
     });
 });
 
-const port = 8000;
+const port = process.env.PORT || 80;
 app.listen(port, () => {
     console.log(`Server is up and listening on port ${port}...`);
 });
