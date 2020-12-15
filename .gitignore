@@ -1,5 +1,5 @@
 /.idea/
 /server/node_modules/
 /server/.env
-/server/first-database.iml
+first-database.iml
 /server/elephantsql.jsheroku login
