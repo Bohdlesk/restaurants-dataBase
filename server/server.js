@@ -282,7 +282,7 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
             })
         } else if (!((req.body.stars > 0) && (req.body.stars < 6))) {
             // console.log(req)
-            console.log(req.body.stars)
+            // console.log(req.body.stars)
             res.status(404).json({
                 status: 'error',
                 message: 'wrong stars value'
