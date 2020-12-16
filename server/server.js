@@ -13,13 +13,13 @@ const corsOptions = {
 
 
 
-// app.use(express.json());
-// app.use (cors(corsOptions));
-app.use(function(req, res, next) {
-    express.json();
-    cors(corsOptions);
-    next();
-});
+app.use(express.json());
+app.use (cors(corsOptions));
+// app.use(function(req, res, next) {
+//     express.json();
+//     cors(corsOptions);
+//     next();
+// });
 
 
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
