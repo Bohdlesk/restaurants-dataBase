@@ -62,13 +62,13 @@ client.connect(function (err) {
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
 
-    client.query('SELECT * FROM "public"."restaurants"', function (err, result1) {
+    client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
 
         if (err) {
             return console.error('error running query', err);
         }
 
-        if (result1.rows.length === 0) {
+        if (result.rows.length === 0) {
             res.status(404).json({
                 status: 'error',
                 message: 'restaurant list is empty'
@@ -87,7 +87,7 @@ app.get('/api/v1/restaurants', (req, res) => {
 
             res.status(200).json({
                 status: 'success',
-                restaurants: result1.rows
+                restaurants: result.rows
             });
         }
     })
