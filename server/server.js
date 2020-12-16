@@ -68,7 +68,7 @@ app.get('/api/v1/restaurants', (req, res) => {
             return console.error('error running query', err);
         }
 
-        if (result.rows.length === 0) {
+        if (result1.rows.length === 0) {
             res.status(404).json({
                 status: 'error',
                 message: 'restaurant list is empty'
