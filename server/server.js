@@ -5,15 +5,22 @@ var express = require('express');
 var pg = require('pg');
 const cors = require('cors');
 
-
 const app = express();
-app.use(express.json());
-
 const corsOptions = {
     origin : '*',
     optionsSuccessStatus:200
 }
-app.use (cors(corsOptions))
+
+
+
+// app.use(express.json());
+// app.use (cors(corsOptions));
+app.use(function(req, res, next) {
+    express.json();
+    cors(corsOptions);
+    next();
+});
+
 
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 var client = new pg.Client(conString);
