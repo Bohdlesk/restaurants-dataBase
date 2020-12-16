@@ -78,11 +78,11 @@ app.get('/api/v1/restaurants', (req, res) => {
             //
             // }
 
-            client.query('SELECT id, rest_id, stars FROM "public"."reviews" where rest_id = $1', [result1.rows], function (err, result2) {
-                if (err) {
-                    return console.error('error running query', err);
-                }
-            })
+            // client.query('SELECT id, rest_id, stars FROM "public"."reviews" where rest_id = $1', [result1.rows], function (err, result2) {
+            //     if (err) {
+            //         return console.error('error running query', err);
+            //     }
+            // })
 
 
             res.status(200).json({
