@@ -1,6 +1,6 @@
 // require('dotenv').config();
 var express = require('express');
-var morgan = require('morgan');
+// var morgan = require('morgan');
 // const db = require('./elephantsql');
 var pg = require('pg');
 const cors = require('cors');
