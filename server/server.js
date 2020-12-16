@@ -1,14 +1,13 @@
 // require('dotenv').config();
 var express = require('express');
-// var morgan = require('morgan');
+var morgan = require('morgan');
 // const db = require('./elephantsql');
 var pg = require('pg');
 const cors = require('cors');
 
 
 const app = express();
-// app.use(express.json());
-//test
+app.use(express.json());
 
 const corsOptions = {
     origin : '*',
@@ -19,7 +18,6 @@ app.use (cors(corsOptions))
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 var client = new pg.Client(conString);
 
-//
 // app.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "http://localhost:3000/");
 //     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -39,7 +37,7 @@ var client = new pg.Client(conString);
 //     return res.sendStatus(200);
 // });
 
-/////////////////
+
 client.connect(function (err) {
 
     if (err) {
@@ -52,20 +50,19 @@ client.connect(function (err) {
         }
 
         console.log(result.rows[0].theTime);
-        // client.end();
     });
 });
-//////////////////////////
+
 
 // app.get('/api/v1/restaurants', cors(corsOptions), (req, res, next) => {
-//     console.log('work bitch!!!!!!!!1')
+//     console.log('work bit h!!!!!!!!1')
 //     res.json({msg: 'This is CORS-enabled for a Single Route'})
 // });
 
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
 
-    client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
+    client.query('SELECT * FROM "public"."restaurants"', function (err, result1) {
 
         if (err) {
             return console.error('error running query', err);
@@ -77,12 +74,22 @@ app.get('/api/v1/restaurants', (req, res) => {
                 message: 'restaurant list is empty'
             });
         } else {
+            // for (x in result1){
+            //
+            // }
+
+            client.query('SELECT id, rest_id, stars FROM "public"."reviews" where rest_id = $1', [result1.rows], function (err, result2) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+            })
+
+
             res.status(200).json({
                 status: 'success',
-                restaurants: result.rows
+                restaurants: result1.rows
             });
         }
-        // client.end();
     })
 });
 
@@ -136,7 +143,6 @@ app.post('/api/v1/restaurants', (req, res) => {
                     status: 'success',
                     restaurants: req.body
                 });
-                    // client.end();
             })
         }
     })
@@ -165,8 +171,7 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
                 res.status(204).json({
                     status: 'success'
                 })
-            });
-
+            })
         }
     });
 });
@@ -246,8 +251,6 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 id], function (err, result) {
 
                 if (err) {
-                    // res.status(404);
-                    // console.log('test')
                     return console.error('error running query', err);
 
                 }
@@ -256,8 +259,6 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
 
             res.status(200).json({
                 status: 'success'
-                // restaurant: req.body
-
             });
 
         }
@@ -267,7 +268,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
 
 //post restaurant review
 app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
-
+    // console.log(req)
     let id = req.params.id;
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
         if (err) {
@@ -280,6 +281,8 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
                 message: 'restaurant is not found'
             })
         } else if (!((req.body.stars > 0) && (req.body.stars < 6))) {
+            // console.log(req)
+            console.log(req.body.stars)
             res.status(404).json({
                 status: 'error',
                 message: 'wrong stars value'
@@ -339,7 +342,7 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
 
 
 app.get('/api/v1', (req, res) => {
-    console.log(404);
+    // console.log(404);
     res.status(404).json({
         status: '404',
     });
