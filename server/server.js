@@ -22,6 +22,7 @@ app.use(cors(corsOptions));
 
 
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
+
 var client = new pg.Client(conString);
 
 // app.use(function(req, res, next) {
