@@ -109,7 +109,6 @@ app.get('/api/v1/restaurants', (req, res) => {
 
 // create a restaurant
 app.post('/api/v1/restaurants', (req, res) => {
-    console.log('hi world')
     var checker = 0;
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
         if (err) {
