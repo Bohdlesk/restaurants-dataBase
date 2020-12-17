@@ -7,14 +7,13 @@ const cors = require('cors');
 
 const app = express();
 const corsOptions = {
-    origin : '*',
-    optionsSuccessStatus:200
+    origin: '*',
+    optionsSuccessStatus: 200
 }
 
 
-
 app.use(express.json());
-app.use (cors(corsOptions));
+app.use(cors(corsOptions));
 // app.use(function(req, res, next) {
 //     express.json();
 //     cors(corsOptions);
@@ -31,8 +30,6 @@ var client = new pg.Client(conString);
 //     console.log('t');
 //     next();
 // });
-
-
 
 
 // app.use(function(req, res, next){
@@ -101,7 +98,6 @@ app.get('/api/v1/restaurants', (req, res) => {
             // })
 
 
-
             res.status(200).json({
                 status: 'success',
                 restaurants: result.rows
@@ -153,14 +149,14 @@ app.post('/api/v1/restaurants', (req, res) => {
                 'INSERT INTO "public"."restaurants" (name, location, price_range, website) values ($1, $2, $3, $4)',
                 [req.body.name, req.body.location, req.body.price_range, req.body.website],
                 function (err, result) {
-                if (err) {
-                    return console.error('error running query', err);
-                }
-                res.status(200).json({
-                    status: 'success',
-                    restaurants: req.body
-                });
-            })
+                    if (err) {
+                        return console.error('error running query', err);
+                    }
+                    res.status(200).json({
+                        status: 'success',
+                        restaurants: req.body
+                    });
+                })
         }
     })
 });
@@ -232,7 +228,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 status: 'error',
                 message: 'restaurant is not found'
             })
-        } else if ((req.body.price_range > 5) || (req.body.price_range  < 1)){
+        } else if ((req.body.price_range > 5) || (req.body.price_range < 1)) {
             res.status(404).json({
                 status: 'error',
                 message: 'price_range out of range'
@@ -302,32 +298,26 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
                 status: 'error',
                 message: 'wrong stars value'
             })
-        }else {
+        } else {
 
             let oldReviewsQuantity = result.rows[0].reviews_quantity;
             let oldRestaurantRating = result.rows[0].rating;
             let newReviewsQuantity = oldReviewsQuantity + 1;
 
-            if(oldReviewsQuantity === null){
-                changeReviewsQuantity(1, id);
-            } else{
-                changeReviewsQuantity(newReviewsQuantity, id)
-            }
+            // if (oldReviewsQuantity === null) {
+            //     changeReviewsQuantity(1, id);
+            // } else {
+            //     changeReviewsQuantity(newReviewsQuantity, id)
+            // }
+
+            changeReviewsQuantity(newReviewsQuantity, id)
 
             let newReviewRating = req.body.stars;
 
-            let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating)/
+            let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating) /
                 (newReviewsQuantity);
 
             changeRestaurantRating(newRestaurantRating, id);
-
-
-
-
-
-
-
-
 
 
             // console.log(result.rows[0].rating)
@@ -347,7 +337,6 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
             // console.log(rating)
 
 
-
             // UPDATE "public"."restaurants" SET website = $1 where id = $2
             // client.query(
             //     'UPDATE "public"."restaurants" SET rating = $1 where id = $2',
@@ -360,7 +349,6 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
             //         //     restaurants: req.body
             //         // });
             //     })
-
 
 
             client.query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
@@ -413,8 +401,6 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
                 })
 
 
-
-
         }
     })
 });
@@ -428,7 +414,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 
-function changeReviewsQuantity(reviewsQuantity,id) {
+function changeReviewsQuantity(reviewsQuantity, id) {
     client.query('UPDATE "public"."restaurants" SET reviews_quantity = $1 where id = $2', [reviewsQuantity, id],
         function (err, result) {
             if (err) {
@@ -437,7 +423,7 @@ function changeReviewsQuantity(reviewsQuantity,id) {
         })
 }
 
-function changeRestaurantRating(newRating,id) {
+function changeRestaurantRating(newRating, id) {
     client.query('UPDATE "public"."restaurants" SET rating = $1 where id = $2', [newRating, id],
         function (err, result) {
             if (err) {
@@ -447,19 +433,26 @@ function changeRestaurantRating(newRating,id) {
 }
 
 // function getRestaurantRating(id) {
-//     let res = null;
-//     client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id],
-//         function (err, result) {
-//             if (err) {
-//                 return console.error('error running query', err);
-//             }
-//             // console.log(result.rows[0].rating)
-//             res = result.rows[0].rating;
-//         })
-//     return
-// }
+//     // debugger;
+//     let res;
+//     return client
+//         .query('SELECT rating FROM "public"."restaurants" where id = $1', [id], (err, result) => {
+//         if (err) {
+//             return console.error('error running query', err);
+//         }
+//         // console.log(result.rows[0].rating)
+//         res = result.rows[0].rating;
+//         console.log(res)
+//         console.log('test');
+//         return res;
+//     }).then(console.log(res))
+//     // console.log('testssss')
 //
-// console.log(getRestaurantRating(1));
+//     // console.log('test1');
+//     // return res;
+// }
+
+//
 
 
 const port = process.env.PORT || 80;
