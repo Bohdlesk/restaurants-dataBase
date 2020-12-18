@@ -185,6 +185,11 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
                     status: 'success'
                 })
             })
+            client.query('DELETE FROM "public"."reviews" WHERE rest_id = $1', [id], function (err, result) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+            })
         }
     });
 });
@@ -315,7 +320,7 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
             let newReviewRating = req.body.stars;
 
             let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating) /
-                (newReviewsQuantity);
+                newReviewsQuantity;
 
             changeRestaurantRating(newRestaurantRating, id);
 
