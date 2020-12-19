@@ -70,6 +70,9 @@ app.get('/api/v1/restaurants', (req, res) => {
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
 
         if (err) {
+            res.status(404).json({
+                status: 'error',
+            });
             return console.error('error running query', err);
         }
 
@@ -112,6 +115,9 @@ app.post('/api/v1/restaurants', (req, res) => {
     var checker = 0;
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
         if (err) {
+            res.status(404).json({
+                status: 'error',
+            });
             return console.error('error running query', err);
         }
 
@@ -168,6 +174,9 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
 
         if (err) {
+            res.status(404).json({
+                status: 'error',
+            });
             return console.error('error running query', err);
         }
 
@@ -200,6 +209,9 @@ app.get('/api/v1/restaurants/:id', (req, res) => {
     let id = req.params.id;
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
         if (err) {
+            res.status(404).json({
+                status: 'error',
+            });
             return console.error('error running query', err);
         }
 
@@ -225,6 +237,9 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
 
         if (err) {
+            res.status(404).json({
+                status: 'error',
+            });
             return console.error('error running query', err);
         }
 
@@ -239,46 +254,45 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 message: 'price_range out of range'
             })
         } else {
-            client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
-                id], function (err, result) {
-                if (err) {
+            if (not(req.body.name === null)){
+                client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
+                    id], function (err, result) {
+                    if (err) {
+                        return console.error('error running query', err);
+                    }
+                })
+            }
+            if (not(req.body.location === null)){
+                client.query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
+                    id], function (err, result) {
 
-                    return console.error('error running query', err);
+                    if (err) {
+                        return console.error('error running query', err);
+                    }
+                })
+            }
+
+                if (not(req.body.price_range === null)){
+                    client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
+                        id], function (err, result) {
+
+                        if (err) {
+                            return console.error('error running query', err);
+                        }
+                    })
                 }
-            })
-            client.query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
-                id], function (err, result) {
+            if (not(req.body.website === null)){
+                client.query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
+                    id], function (err, result) {
 
-                if (err) {
-                    return console.error('error running query', err);
-                }
-
-            })
-            client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
-                id], function (err, result) {
-
-                if (err) {
-                    // res.status(404);
-                    // console.log('test')
-                    return console.error('error running query', err);
-
-                }
-
-            })
-            client.query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
-                id], function (err, result) {
-
-                if (err) {
-                    return console.error('error running query', err);
-
-                }
-
-            })
-
+                    if (err) {
+                        return console.error('error running query', err);
+                    }
+                })
+            }
             res.status(200).json({
                 status: 'success'
             });
-
         }
     })
 });
@@ -290,6 +304,9 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
     let id = req.params.id;
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
         if (err) {
+            res.status(404).json({
+                status: 'error',
+            });
             return console.error('error running query 1', err);
         }
 
