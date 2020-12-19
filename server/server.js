@@ -300,7 +300,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
 
 //post restaurant review
 app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
-    // console.log(req)
+
     let id = req.params.id;
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
         if (err) {
@@ -380,12 +380,12 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
                     }
                     res.status(200).json({
                         status: 'success',
-                        reviews: {
-                            rest_id: id,
-                            name: req.body.name,
-                            feedback_text: req.body.feedback_text,
-                            stars: req.body.stars,
-                        }
+                        // reviews: {
+                        //     rest_id: id,
+                        //     name: req.body.name,
+                        //     feedback_text: req.body.feedback_text,
+                        //     stars: req.body.stars,
+                        // }
                     })
                 })
         }
