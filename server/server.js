@@ -150,6 +150,7 @@ app.post('/api/v1/restaurants', (req, res) => {
 app.delete('/api/v1/restaurants/:id', (req, res) => {
 
     let id = req.params.id;
+
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
 
         if (err) {
@@ -165,27 +166,30 @@ app.delete('/api/v1/restaurants/:id', (req, res) => {
                 message: 'restaurant is not found'
             })
         } else {
-            client.query('DELETE FROM "public"."restaurants" WHERE id = $1', [id], function (err, result) {
-                if (err) {
-                    return console.error('error running query', err);
-                }
-                res.status(204).json({
-                    status: 'success'
-                })
-            })
             client.query('DELETE FROM "public"."reviews" WHERE rest_id = $1', [id], function (err, result) {
                 if (err) {
                     return console.error('error running query', err);
                 }
+                client.query('DELETE FROM "public"."restaurants" WHERE id = $1', [id], function (err, result) {
+                    if (err) {
+                        return console.error('error running query', err);
+                    }
+                    res.status(204).json({
+                        status: 'success'
+                    })
+                })
             })
+
+
         }
     });
 });
 
 // get a restaurant (ONE)
-app.get('/api/v1/restaurants/:id', (req, res) => {
+app.get('/api/v1/restaurants/:id', async (req, res) => {
 
     let id = req.params.id;
+
     client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
         if (err) {
             res.status(404).json({
@@ -207,6 +211,35 @@ app.get('/api/v1/restaurants/:id', (req, res) => {
         }
     });
 });
+// console.log(getRestaurantRating(1));
+// async function getRestaurantRating(id) {
+//     // // debugger;
+//     let callback = function (err, result){
+//         if (err) {
+//             console.log('here')
+//             return console.error('error running query', err);
+//         }
+//         // console.log(result.rows[0].rating)
+//         console.log('her 2')
+//         let res = result.rows[0].rating;
+//         console.log('res in func', res)
+//         // console.log('test');
+//         return res;
+//     }
+//     let que = await client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id], callback);
+//     let test = await que;
+//     console.log('test',test)
+//     // let res1 = await promise;
+// // console.log(result)
+//     console.log('before prom')
+//     // await promise;
+//     // console.log('after', promise)
+//     return 10;
+//     // console.log('testssss')
+//
+//     // console.log('test1');
+//     // return res;
+// }
 
 
 // Uppdate restaurants
@@ -233,7 +266,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 message: 'price_range out of range'
             })
         } else {
-            if (not(req.body.name === null)){
+            if (!(req.body.name === null)) {
                 client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
                     id], function (err, result) {
                     if (err) {
@@ -241,7 +274,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                     }
                 })
             }
-            if (not(req.body.location === null)){
+            if (!(req.body.location === null)) {
                 client.query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
                     id], function (err, result) {
 
@@ -251,16 +284,16 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                 })
             }
 
-                if (not(req.body.price_range === null)){
-                    client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
-                        id], function (err, result) {
+            if (!(req.body.price_range === null)) {
+                client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
+                    id], function (err, result) {
 
-                        if (err) {
-                            return console.error('error running query', err);
-                        }
-                    })
-                }
-            if (not(req.body.website === null)){
+                    if (err) {
+                        return console.error('error running query', err);
+                    }
+                })
+            }
+            if (!(req.body.website === null)) {
                 client.query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
                     id], function (err, result) {
 
@@ -388,25 +421,7 @@ function changeRestaurantRating(newRating, id) {
         })
 }
 
-// function getRestaurantRating(id) {
-//     // debugger;
-//     let res;
-//     return client
-//         .query('SELECT rating FROM "public"."restaurants" where id = $1', [id], (err, result) => {
-//         if (err) {
-//             return console.error('error running query', err);
-//         }
-//         // console.log(result.rows[0].rating)
-//         res = result.rows[0].rating;
-//         console.log(res)
-//         console.log('test');
-//         return res;
-//     }).then(console.log(res))
-//     // console.log('testssss')
-//
-//     // console.log('test1');
-//     // return res;
-// }
+
 
 //
 
