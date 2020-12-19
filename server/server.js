@@ -20,7 +20,6 @@ app.use(cors(corsOptions));
 //     next();
 // });
 
-
 var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 
 var client = new pg.Client(conString);
@@ -82,26 +81,6 @@ app.get('/api/v1/restaurants', (req, res) => {
                 message: 'restaurant list is empty'
             });
         } else {
-            // result.rows.rating = {}
-            // console.log(result.rows)
-            //
-            // let restaurantsId = [];
-            // for (x in result.rows){
-            //     restaurantsId.push(result.rows[x].id)
-            // }
-            // console.log(restaurantsId)
-            //
-            // client.query('SELECT id, rest_id, stars FROM "public"."reviews"', function (err, result1) {
-            //     if (err) {
-            //         return console.error('error running query', err);
-            //     }
-            //     console.log(result1.rows)
-            //     for (x in result.rows){
-            //
-            //     }
-            // })
-
-
             res.status(200).json({
                 status: 'success',
                 restaurants: result.rows
@@ -141,9 +120,9 @@ app.post('/api/v1/restaurants', (req, res) => {
             })
         } else {
             // const query = {
-            //     //         text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
-            //     //         values: [req.body.name, req.body.location, req.body.price_range],
-            //     //     }
+            //         text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
+            //         values: [req.body.name, req.body.location, req.body.price_range],
+            //     }
 
             // console.log(req.body.website)
             // let test = req.body.websitel
@@ -223,7 +202,7 @@ app.get('/api/v1/restaurants/:id', (req, res) => {
         } else {
             res.status(200).json({
                 status: 'success',
-                restaurant: result.rows
+                restaurant: result.rows[0]
             });
         }
     });
@@ -326,12 +305,6 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
             let oldRestaurantRating = result.rows[0].rating;
             let newReviewsQuantity = oldReviewsQuantity + 1;
 
-            // if (oldReviewsQuantity === null) {
-            //     changeReviewsQuantity(1, id);
-            // } else {
-            //     changeReviewsQuantity(newReviewsQuantity, id)
-            // }
-
             changeReviewsQuantity(newReviewsQuantity, id)
 
             let newReviewRating = req.body.stars;
@@ -341,38 +314,6 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
 
             changeRestaurantRating(newRestaurantRating, id);
 
-
-            // console.log(result.rows[0].rating)
-            // let oldRating = result.rows[0].rating;
-            // let newRating = req.body.stars;
-            // console.log('old ' + oldRating)
-            // console.log('плюсовать ' + newRating)
-            // if (oldRating === null){
-            //     oldRating = newRating;
-            //     console.log('test' )
-            // } else{
-            //     oldRating += newRating;
-            //     oldRating /= 2;
-            //
-            // }
-            // console.log('new ' + oldRating)
-            // console.log(rating)
-
-
-            // UPDATE "public"."restaurants" SET website = $1 where id = $2
-            // client.query(
-            //     'UPDATE "public"."restaurants" SET rating = $1 where id = $2',
-            //     [oldRating, id], function (err, result) {
-            //         if (err) {
-            //             return console.error('error running query 2', err);
-            //         }
-            //         // res.status(200).json({
-            //         //     status: 'success',
-            //         //     restaurants: req.body
-            //         // });
-            //     })
-
-
             client.query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
                 [id, req.body.name, req.body.feedback_text, req.body.stars], function (err, result) {
                     if (err) {
@@ -380,12 +321,6 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
                     }
                     res.status(200).json({
                         status: 'success',
-                        // reviews: {
-                        //     rest_id: id,
-                        //     name: req.body.name,
-                        //     feedback_text: req.body.feedback_text,
-                        //     stars: req.body.stars,
-                        // }
                     })
                 })
         }
@@ -429,7 +364,6 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
 
 
 app.get('/api/v1', (req, res) => {
-    // console.log(404);
     res.status(404).json({
         status: '404',
     });
