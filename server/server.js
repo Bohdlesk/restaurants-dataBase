@@ -416,7 +416,8 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
 
 
 app.get('/api/v1', (req, res) => {
-    res.status(404).json({
+    console.log(req.query)
+    res.status(200).json({
         status: '404',
     });
 });
