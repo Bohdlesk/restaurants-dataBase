@@ -211,34 +211,49 @@ app.get('/api/v1/restaurants/:id', async (req, res) => {
         }
     });
 });
-// console.log(getRestaurantRating(1));
-// async function getRestaurantRating(id) {
-//     // // debugger;
-//     let callback = function (err, result){
-//         if (err) {
-//             console.log('here')
-//             return console.error('error running query', err);
-//         }
+//
+// async   function getRestaurantRating(id) {
+//         const result =  await Promise(
+//             client
+//             .query('SELECT rating FROM "public"."restaurants" where id = $1', [id]);
+//         // console.log('1 f ')
+//         resolve(result);
+//     )
+// // .then( data => {
+//         // return new Promise((resolve => {
+//         //     // console.log('2 f ', data.rows[0].rating)
+//         //     const rating = data.rows[0].rating
+//         //     resolve(rating)
+//         // }))
+//         // console.log('2 f ', data.rows[0].rating)
+//         // return data.rows[0].rating;
+//     })
+//     return (promise);
+//     // return promise;
+//     // try {
+//     // let rating;
+//     // const result = await client
+//     //     .query('SELECT rating FROM "public"."restaurants" where id = $1', [id]);
+//     // console.log('result1',result.rows[0].rating)
+//     // return result.rows[0].rating;
+//     // } catch (e) {
+//     //     console.log(e)
+//     // }
+// }
+// console.log(getRestaurantRating(1))
+
+// async function zapros(id) {
+//     let resul = 0;
+//     const que = client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id], function (err, result) {
 //         // console.log(result.rows[0].rating)
 //         console.log('her 2')
-//         let res = result.rows[0].rating;
-//         console.log('res in func', res)
+//         resul = result.rows[0].rating;
+//         console.log('res in func', result.rows[0].rating)
 //         // console.log('test');
-//         return res;
-//     }
-//     let que = await client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id], callback);
-//     let test = await que;
-//     console.log('test',test)
-//     // let res1 = await promise;
-// // console.log(result)
-//     console.log('before prom')
-//     // await promise;
-//     // console.log('after', promise)
-//     return 10;
-//     // console.log('testssss')
-//
-//     // console.log('test1');
-//     // return res;
+//     });
+//     console.log('result ', resul)
+//     console.log('12f')
+//     return que;
 // }
 
 
@@ -272,6 +287,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                     if (err) {
                         return console.error('error running query', err);
                     }
+
                 })
             }
             if (!(req.body.location === null)) {
@@ -281,6 +297,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                     if (err) {
                         return console.error('error running query', err);
                     }
+
                 })
             }
 
@@ -291,6 +308,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                     if (err) {
                         return console.error('error running query', err);
                     }
+
                 })
             }
             if (!(req.body.website === null)) {
@@ -300,6 +318,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                     if (err) {
                         return console.error('error running query', err);
                     }
+
                 })
             }
             res.status(200).json({
@@ -420,7 +439,6 @@ function changeRestaurantRating(newRating, id) {
             }
         })
 }
-
 
 
 //
