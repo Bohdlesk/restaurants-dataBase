@@ -66,6 +66,11 @@ client.connect(function (err) {
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
 
+    const typeOfSort = req.query.order
+    const parametrOfSort = req.query.name
+    console.log(typeOfSort, ' sort by ', parametrOfSort)
+
+
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
 
         if (err) {
@@ -81,13 +86,53 @@ app.get('/api/v1/restaurants', (req, res) => {
                 message: 'restaurant list is empty'
             });
         } else {
-            res.status(200).json({
-                status: 'success',
-                restaurants: result.rows
-            });
+            res.status(200).json(sortResult(result.rows, typeOfSort, parametrOfSort));
         }
     })
 });
+
+function sortResult(result, typeOfSort, parametrOfSort) {
+    const sortedResult = {};
+    if (parametrOfSort === 'rating') sortByRating(result, typeOfSort);
+
+    return (result)
+}
+
+function sortByRating(array, typeOfSort) {
+    const forIncreasing = '[]asc'
+    const forDecreasing = '[]desc'
+    let arrayForSorting = [];
+    for (let i = 0; i < array.length; i++){
+        arrayForSorting[i] = array[i].rating;
+    }
+    // console.log(arrayForSorting)
+    if (typeOfSort === forIncreasing) sortByIncreasing(arrayForSorting)
+    if (typeOfSort === forDecreasing) sortByDecreasing(arrayForSorting)
+    for (let i = 0; i < array.length; i++){
+        array[i].rating = arrayForSorting[i];
+    }
+    return array;
+}
+function sortByIncreasing(array){
+    console.log(array)
+    // console.log('sort by incr')
+    array.sort((a, b) => {
+        if (a < b) {
+            return 1
+        } else return -1
+    })
+    return array
+}
+function sortByDecreasing (array){
+    console.log('sort by dercr')
+    array.sort((a, b) => {
+        if (a > b) {
+            return 1
+        } else return -1
+    })
+    return array
+}
+
 
 // create a restaurant
 app.post('/api/v1/restaurants', (req, res) => {
@@ -416,7 +461,7 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
 
 
 app.get('/api/v1', (req, res) => {
-    console.log(req.query)
+    console.log(req.query.order)
     res.status(200).json({
         status: '404',
     });
