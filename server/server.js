@@ -92,10 +92,27 @@ app.get('/api/v1/restaurants', (req, res) => {
 });
 
 function sortResult(result, typeOfSort, parametrOfSort) {
-    const sortedResult = {};
+
     if (parametrOfSort === 'rating') sortByRating(result, typeOfSort);
+    if (parametrOfSort === 'reviews quantity') sortByReviewsQuant(result, typeOfSort);
 
     return (result)
+}
+
+function sortByReviewsQuant(array, typeOfSort) {
+    const forIncreasing = '[]asc'
+    const forDecreasing = '[]desc'
+    let arrayForSorting = [];
+    for (let i = 0; i < array.length; i++){
+        arrayForSorting[i] = array[i].reviews_quantity;
+    }
+    // console.log(arrayForSorting)
+    if (typeOfSort === forIncreasing) sortByIncreasing(arrayForSorting)
+    if (typeOfSort === forDecreasing) sortByDecreasing(arrayForSorting)
+    for (let i = 0; i < array.length; i++){
+        array[i].reviews_quantity = arrayForSorting[i];
+    }
+    return array;
 }
 
 function sortByRating(array, typeOfSort) {
@@ -124,7 +141,7 @@ function sortByIncreasing(array){
     return array
 }
 function sortByDecreasing (array){
-    console.log('sort by dercr')
+    // console.log('sort by dercr')
     array.sort((a, b) => {
         if (a > b) {
             return 1
