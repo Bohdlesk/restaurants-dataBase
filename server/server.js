@@ -68,8 +68,6 @@ app.get('/api/v1/restaurants', (req, res) => {
 
     const typeOfSort = req.query.order
     const parametrOfSort = req.query.name
-    console.log(typeOfSort, ' sort by ', parametrOfSort)
-
 
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
 
@@ -96,7 +94,10 @@ function sortResult(result, typeOfSort, parametrOfSort) {
     if (parametrOfSort === 'rating') sortByRating(result, typeOfSort);
     if (parametrOfSort === 'reviews quantity') sortByReviewsQuant(result, typeOfSort);
 
-    return (result)
+    return ({
+        status: 'success',
+        restaurants: result
+    })
 }
 
 function sortByReviewsQuant(array, typeOfSort) {
