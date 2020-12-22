@@ -66,27 +66,73 @@ client.connect(function (err) {
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
 
-    const typeOfSort = req.query.order
-    const parametrOfSort = req.query.name
-
+    // let typeOfSort = req.query.order
+    // let paramOfSort = req.query.name
+    // // console.log(parametrOfSort)
+    //
+    // if (typeOfSort === '[]asc') {
+    //     typeOfSort = 'ASC'
+    // } else if (typeOfSort === '[]desc') {
+    //     typeOfSort = 'DESC'
+    // }
+    // qve = 'SELECT * FROM "public"."restaurants" ORDER BY $1~ NULLs FIRST '
+    // console.log(typeof (paramOfSort))
+    // client.query('SELECT * FROM "public"."restaurants" ORDER BY $1 ',[paramOfSort],  function (err, result) {
+    //         if (err) {
+    //             res.status(404).json({
+    //                 status: 'error',
+    //             });
+    //             return console.error('error running query', err);
+    //         } else {
+    //             res.status(200).json({
+    //                 status: 'seccess',
+    //                 restaurants: result.rows
+    //             })
+    //         }
+    //
+    //     }
+    // );
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
-
-        if (err) {
-            res.status(404).json({
-                status: 'error',
-            });
-            return console.error('error running query', err);
+            if (err) {
+                res.status(404).json({
+                    status: 'error',
+                });
+                return console.error('error running query', err);
+            } else {
+                res.status(200).json({
+                    status: 'seccess',
+                    restaurants: result.rows
+                })
+            }
         }
+    );
 
-        if (result.rows.length === 0) {
-            res.status(404).json({
-                status: 'error',
-                message: 'restaurant list is empty'
-            });
-        } else {
-            res.status(200).json(sortResult(result.rows, typeOfSort, parametrOfSort));
-        }
-    })
+    // if (typeOfSort === 'ASC' || 'DESC') {
+
+    // client.query('SELECT * FROM restaurants ORDER BY rating ASC NULLS FIRST', [paramOfSort],
+    //       function (err, result)  {
+    //             if (err) {
+    //                 res.status(404).json({
+    //                     status: 'error',
+    //                 });
+    //                 return console.error('error running query', err);
+    //             }
+    //             if (result.rows.length === 0) {
+    //                 res.status(404).json({
+    //                     status: 'error',
+    //                     message: 'restaurant list is empty'
+    //                 });
+    //             } else {
+    //                 res.status(200).json({
+    //                     status: 'seccess',
+    //                     restaurants: result.rows
+    //                 })
+    //                 // sortResult(result.rows, typeOfSort, parametrOfSort));
+    //             }
+    //
+    //         })
+
+
 });
 
 function sortResult(result, typeOfSort, parametrOfSort) {
@@ -104,13 +150,13 @@ function sortByReviewsQuant(array, typeOfSort) {
     const forIncreasing = '[]asc'
     const forDecreasing = '[]desc'
     let arrayForSorting = [];
-    for (let i = 0; i < array.length; i++){
+    for (let i = 0; i < array.length; i++) {
         arrayForSorting[i] = array[i].reviews_quantity;
     }
     // console.log(arrayForSorting)
     if (typeOfSort === forIncreasing) sortByIncreasing(arrayForSorting)
     if (typeOfSort === forDecreasing) sortByDecreasing(arrayForSorting)
-    for (let i = 0; i < array.length; i++){
+    for (let i = 0; i < array.length; i++) {
         array[i].reviews_quantity = arrayForSorting[i];
     }
     return array;
@@ -120,18 +166,19 @@ function sortByRating(array, typeOfSort) {
     const forIncreasing = '[]asc'
     const forDecreasing = '[]desc'
     let arrayForSorting = [];
-    for (let i = 0; i < array.length; i++){
+    for (let i = 0; i < array.length; i++) {
         arrayForSorting[i] = array[i].rating;
     }
     // console.log(arrayForSorting)
     if (typeOfSort === forIncreasing) sortByIncreasing(arrayForSorting)
     if (typeOfSort === forDecreasing) sortByDecreasing(arrayForSorting)
-    for (let i = 0; i < array.length; i++){
+    for (let i = 0; i < array.length; i++) {
         array[i].rating = arrayForSorting[i];
     }
     return array;
 }
-function sortByIncreasing(array){
+
+function sortByIncreasing(array) {
     console.log(array)
     // console.log('sort by incr')
     array.sort((a, b) => {
@@ -141,7 +188,8 @@ function sortByIncreasing(array){
     })
     return array
 }
-function sortByDecreasing (array){
+
+function sortByDecreasing(array) {
     // console.log('sort by dercr')
     array.sort((a, b) => {
         if (a > b) {
