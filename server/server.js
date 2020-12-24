@@ -1,17 +1,53 @@
-// require('dotenv').config();
-var express = require('express');
+require('dotenv').config();
+const express = require('express');
 // var morgan = require('morgan');
 // const db = require('./elephantsql');
-var pg = require('pg');
+const pg = require('pg');
 const cors = require('cors');
+const AWS = require('aws-sdk');
+const getImgBuffer = require('./getImgBuffer');
+const image2base64 = require('image-to-base64');
+const multer = require('multer');
+
+
+const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY} = process.env;
+
+AWS.config.update({
+    accessKeyId: 'AKIAJOQYHAKNDDHWX7DQ',
+    secretAccessKey: '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',
+    region: 'eu-central-1'
+})
+
+let imageBuffer;
+const imageToBase64 = (path) => {
+    image2base64(path)
+        .then(
+            (result) => {
+                console.log('ready');
+                imageBuffer = getImgBuffer(result);
+                console.log(imageBuffer);
+                return result;
+            }
+        )
+        .catch(
+            (error) => {
+                console.log(error);
+            }
+        )
+};
+imageToBase64('server/encodet.jpg');
+// const test = imageToBase64('server/encodet.jpg');
+
+const s3Bucket = new AWS.S3({params: {Bucket: 'restaurantsdatabaseimages'}});
+
+const conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
+const client = new pg.Client(conString);
 
 const app = express();
 const corsOptions = {
     origin: '*',
     optionsSuccessStatus: 200
 }
-
-
 app.use(express.json());
 app.use(cors(corsOptions));
 // app.use(function(req, res, next) {
@@ -20,9 +56,35 @@ app.use(cors(corsOptions));
 //     next();
 // });
 
-var conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
 
-var client = new pg.Client(conString);
+const imageUpload = (path, buffer) => {
+    const data = {
+        Key: path,
+        Body: buffer,
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg',
+        ACL: 'public-read'
+    };
+    return new Promise((resolve, reject) => {
+        s3Bucket.putObject(data, (err) => {
+            if (err) {
+                console.log('here')
+                reject(err);
+            } else {
+                resolve('https://s3.amazonaws.com/bucketname/imagename.jpg' + path);
+            }
+        });
+    });
+};
+// imageUpload('testPhoto.jpg', getImgBuffer(''))
+// console.log(getImgBuffer(''))
+
+const getImageUrl = async (type, base64Image) => {
+    const buffer = getImgBuffer(base64Image);
+    const currentTime = new Date().getTime();
+    return imageUpload(`${type}/${currentTime}.jpeg`, buffer);
+};
+
 
 // app.use(function(req, res, next) {
 //     res.header("Access-Control-Allow-Origin", "http://localhost:3000/");
@@ -30,8 +92,6 @@ var client = new pg.Client(conString);
 //     console.log('t');
 //     next();
 // });
-
-
 // app.use(function(req, res, next){
 //     res.header('Access-Control-Allow-Origin', "*");
 //     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
@@ -39,6 +99,10 @@ var client = new pg.Client(conString);
 //     res.header("Access-Control-Max-Age", "1728000");
 //     console.log('t')
 //     return res.sendStatus(200);
+// });
+// app.get('/api/v1/restaurants', cors(corsOptions), (req, res, next) => {
+//     console.log('work bit h!!!!!!!!1')
+//     res.json({msg: 'This is CORS-enabled for a Single Route'})
 // });
 
 
@@ -58,14 +122,64 @@ client.connect(function (err) {
 });
 
 
-// app.get('/api/v1/restaurants', cors(corsOptions), (req, res, next) => {
-//     console.log('work bit h!!!!!!!!1')
-//     res.json({msg: 'This is CORS-enabled for a Single Route'})
-// });
+var storage = multer.memoryStorage()
+var upload = multer(
+    {
+        storage: storage,
+        limits: {
+            fileSize: 2000000,
+        },
+        fileFilter(req, file, callback) {
+            if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+                callback(new Error('Please upload an image.'))
+            }
+            callback(undefined, true)
+        }
+    }
+)
+
+
+app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res) => {
+        // try{
+        //     console.log(req.file.buffer);
+        // } catch (e){
+        //     res.status(400).send(e)
+    console.log('api')
+        // }
+        try {
+        const buffer = req.file.buffer;
+        const restId = req.body.id;
+        // const fileName =
+        const fileName = 'restaurantMainImage/' + restId + '.jpg'
+            // req.file.originalname;
+            console.log(restId);
+            // imageUpload (path, buffer)
+            // const incident = await Incident.findById(req.body.id);
+            // console.log(incident);
+            // incident.image = req.file.buffer;
+            // console.log('1')
+            // console.log(incident.image);
+            // res.send()d
+
+
+         await imageUpload (fileName, buffer)
+
+
+            // console.log(req.file.originalname);
+            res.send('ok')
+        } catch (e) {
+        console.log('err')
+            res.status(400).send(e)
+        }
+    }, (error, req, res, next) => {
+    console.log('err test')
+        res.status(400).send({error: error.message})
+    }
+);
 
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
-
+    // imageUpload('encode1.jpg', imageBuffer);
     // let typeOfSort = req.query.order
     // let paramOfSort = req.query.name
     // // console.log(parametrOfSort)
@@ -202,6 +316,7 @@ function sortByDecreasing(array) {
 
 // create a restaurant
 app.post('/api/v1/restaurants', (req, res) => {
+
     var checker = 0;
     client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
         if (err) {
@@ -250,7 +365,8 @@ app.post('/api/v1/restaurants', (req, res) => {
                     }
                     res.status(200).json({
                         status: 'success',
-                        restaurants: req.body
+                        restaurants: req.body,
+                        test: result
                     });
                 })
         }
