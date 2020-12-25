@@ -10,7 +10,7 @@ const image2base64 = require('image-to-base64');
 const multer = require('multer');
 
 
-const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY} = process.env;
+const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PGHOST} = process.env;
 
 AWS.config.update({
     accessKeyId: AWS_ACCESS_KEY_ID,
@@ -40,7 +40,7 @@ imageToBase64('server/encodet.jpg');
 
 const s3Bucket = new AWS.S3({params: {Bucket: 'restaurantsdatabaseimages'}});
 
-const conString = "postgres://fosjswqy:HTqEem25hI_cDS0WlluO2ElogAFvVySd@hattie.db.elephantsql.com:5432/fosjswqy";
+const conString = PGHOST;
 const client = new pg.Client(conString);
 
 const app = express();
