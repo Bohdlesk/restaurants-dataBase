@@ -13,8 +13,8 @@ const multer = require('multer');
 const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY} = process.env;
 
 AWS.config.update({
-    accessKeyId: 'AWS_ACCESS_KEY_ID',
-    secretAccessKey: 'AWS_SECRET_ACCESS_KEY',
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
     region: 'eu-central-1'
 })
 
@@ -68,8 +68,8 @@ const imageUpload = (path, buffer) => {
     return new Promise((resolve, reject) => {
         s3Bucket.putObject(data, (err) => {
             if (err) {
-                console.log('here')
-                reject(err);
+                console.log('err inn promise')
+                reject(new Error('err image upload'));
             } else {
                 resolve('https://s3.amazonaws.com/bucketname/imagename.jpg' + path);
             }
@@ -177,7 +177,7 @@ app.get('/api/v1/restaurants', (req, res) => {
             } else {
                 res.status(200).json({
                     status: 'seccess',
-                    restaurants: result.rows
+                    restaurants: result.rows,
                 })
             }
         }
@@ -288,7 +288,7 @@ app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res
             // console.log(incident.image);
 
 
-            // if buffer undefindet
+            // if buffer undefindet!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             await imageUpload(fileName, buffer)
 
@@ -351,12 +351,27 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
                                         return console.error('error running query', err);
                                     }
 
+
                                     const restId = result.rows[0].id
                                     const fileName = 'restaurantMainImage/' + restId + '.jpg'
                                     const buffer = req.file.buffer;
+                                    const imageLink = 'https://d1ua7nher2b0zf.cloudfront.net/' + fileName;
+                                    await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
+                                        'where id = $2', [imageLink, restId], async (err) => {
+                                        if (err) {
+                                            res.status(404).json({
+                                                status: 'error running query',
+                                            });
+                                        }
+                                        await imageUpload(fileName, buffer)
+                                        res.status(200).json({
+                                            status: 'success',
+                                        });
+                                    })
 
-                                    await imageUpload(fileName, buffer)
+                                    // await imageUpload(fileName, buffer)
 
+                                    console.log('111')
                                 })
                     }
                 })
@@ -364,6 +379,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
             res.status(400).send(e)
         }
     }, (error, req, res, next) => {
+    console.log('testing')
         res.status(400).send({error: error.message})
     }
 );
@@ -520,7 +536,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
         } else {
             if (!(req.body.name === null)) {
                 client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
-                    id], function (err, result) {
+                    id], function (err) {
                     if (err) {
                         return console.error('error running query', err);
                     }
@@ -529,7 +545,7 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
             }
             if (!(req.body.location === null)) {
                 client.query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
-                    id], function (err, result) {
+                    id], function (err) {
 
                     if (err) {
                         return console.error('error running query', err);
@@ -555,7 +571,6 @@ app.post('/api/v1/restaurants/:id', (req, res) => {
                     if (err) {
                         return console.error('error running query', err);
                     }
-
                 })
             }
             res.status(200).json({
