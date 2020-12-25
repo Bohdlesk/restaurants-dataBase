@@ -13,8 +13,8 @@ const multer = require('multer');
 const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY} = process.env;
 
 AWS.config.update({
-    accessKeyId: 'AKIAJOQYHAKNDDHWX7DQ',
-    secretAccessKey: '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',
+    accessKeyId: 'AWS_ACCESS_KEY_ID',
+    secretAccessKey: 'AWS_SECRET_ACCESS_KEY',
     region: 'eu-central-1'
 })
 
@@ -138,44 +138,6 @@ var upload = multer(
     }
 )
 
-
-app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res) => {
-        // try{
-        //     console.log(req.file.buffer);
-        // } catch (e){
-        //     res.status(400).send(e)
-    console.log('api')
-        // }
-        try {
-        const buffer = req.file.buffer;
-        const restId = req.body.id;
-        // const fileName =
-        const fileName = 'restaurantMainImage/' + restId + '.jpg'
-            // req.file.originalname;
-            console.log(restId);
-            // imageUpload (path, buffer)
-            // const incident = await Incident.findById(req.body.id);
-            // console.log(incident);
-            // incident.image = req.file.buffer;
-            // console.log('1')
-            // console.log(incident.image);
-            // res.send()d
-
-
-         await imageUpload (fileName, buffer)
-
-
-            // console.log(req.file.originalname);
-            res.send('ok')
-        } catch (e) {
-        console.log('err')
-            res.status(400).send(e)
-        }
-    }, (error, req, res, next) => {
-    console.log('err test')
-        res.status(400).send({error: error.message})
-    }
-);
 
 // get all restaurants
 app.get('/api/v1/restaurants', (req, res) => {
@@ -313,65 +275,113 @@ function sortByDecreasing(array) {
     return array
 }
 
+app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res) => {
+        try {
+            const buffer = req.file.buffer;
+            const restId = req.body.id;
+            const fileName = 'restaurantMainImage/' + restId + '.jpg'
+            // req.file.originalname;
+
+            // const incident = await Incident.findById(req.body.id);
+            // console.log(incident);
+            // incident.image = req.file.buffer;
+            // console.log(incident.image);
+
+
+            // if buffer undefindet
+
+            await imageUpload(fileName, buffer)
+
+        } catch (e) {
+            res.status(400).send(e)
+        }
+    }, (error, req, res, next) => {
+        res.status(400).send({error: error.message})
+    }
+);
 
 // create a restaurant
-app.post('/api/v1/restaurants', (req, res) => {
+app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 
-    var checker = 0;
-    client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
-        if (err) {
-            res.status(404).json({
-                status: 'error',
-            });
-            return console.error('error running query', err);
-        }
-
-        for (let i in result.rows) {
-            if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
-                checker++;
-                break;
-            }
-        }
-
-        if (checker > 0) {
-            console.log('test')
-            res.status(404).json({
-                status: 'error',
-                message: 'restaurant with this name in this location is already created'
-            })
-        } else if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
-            res.status(404).json({
-                status: 'error',
-                message: 'wrong price range value'
-            })
-        } else {
-            // const query = {
-            //         text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
-            //         values: [req.body.name, req.body.location, req.body.price_range],
-            //     }
-
-            // console.log(req.body.website)
-            // let test = req.body.websitel
-            // if(test === {}){
-            //     test = null
-            // }
-
-            client.query(
-                'INSERT INTO "public"."restaurants" (name, location, price_range, website) values ($1, $2, $3, $4)',
-                [req.body.name, req.body.location, req.body.price_range, req.body.website],
-                function (err, result) {
+        var checker = 0;
+        try {
+            client
+                .query('SELECT * FROM "public"."restaurants"', function (err, result) {
                     if (err) {
+                        res.status(404).json({
+                            status: 'error',
+                        });
                         return console.error('error running query', err);
                     }
-                    res.status(200).json({
-                        status: 'success',
-                        restaurants: req.body,
-                        test: result
-                    });
+
+                    for (let i in result.rows) {
+                        if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
+                            checker++;
+                            break;
+                        }
+                    }
+
+                    if (checker > 0) {
+                        console.log('test')
+                        res.status(404).json({
+                            message: 'restaurant with this name in this location is already created'
+                        })
+                    } else if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
+                        res.status(404).json({
+                            message: 'wrong price range value'
+                        })
+                    } else {
+                        // const query = {
+                        //         text: "insert into restaurants (name, location, price_range) values ($1, $2, $3);",
+                        //         values: [req.body.name, req.body.location, req.body.price_range],
+                        //     }
+
+                        // console.log(req.body.website)
+                        // let test = req.body.websitel
+                        // if(test === {}){
+                        //     test = null
+                        // }
+
+                        client
+                            .query('INSERT INTO "public"."restaurants" (name, location, price_range, website)' +
+                                ' values ($1, $2, $3, $4) RETURNING id',
+                                [req.body.name, req.body.location, req.body.price_range, req.body.website],
+                                async function (err, result) {
+                                    if (err) {
+                                        return console.error('error running query', err);
+                                    }
+
+                                    const restId = result.rows[0].id
+                                    const fileName = 'restaurantMainImage/' + restId + '.jpg'
+                                    const buffer = req.file.buffer;
+
+                                    await imageUpload(fileName, buffer)
+
+                                })
+                    }
                 })
+        } catch (e) {
+            res.status(400).send(e)
         }
-    })
-});
+    }, (error, req, res, next) => {
+        res.status(400).send({error: error.message})
+    }
+);
+
+app.get('/api/v1/restaurants/image', async (req, res) => {
+    const result = await client
+        .query('SELECT * FROM "public"."restaurants"');
+
+    console.log(result)
+})
+
+
+// res.status(200).json({
+//     status: 'success',
+//     restaurants: req.body,
+//     test: result
+// });
+
 
 // delete restaurant
 app.delete('/api/v1/restaurants/:id', (req, res) => {
