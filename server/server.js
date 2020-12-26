@@ -594,13 +594,13 @@ app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
 ;
 
 //get restaurant reviewS
-app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
+app.get('/api/v1/restaurants/:id/reviews', (req, res) => {
 
     let id = req.params.id;
     client.query('SELECT * FROM "public"."reviews" where rest_id = $1', [id], function (err, result) {
         if (err) {
             res.status(404).json({
-                status: 'error',
+                status: 'error running query',
             });
             return console.error('error running query', err);
         }
@@ -610,20 +610,25 @@ app.get('/api/v1/restaurants/:id/rewiews', (req, res) => {
                 status: 'error',
                 message: 'restaurant reviews is not found'
             })
+        // } else {
+        //     client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id],
+        //         function (err, result1) {
+        //             if (err) {
+        //                 return console.error('error running query', err);
+        //             }
+                    // let rating = result1.rows[0].rating;
+                    // res.status(200).json({
+                    //     status: 'success',
+                        // rating: rating,
+                        // restaurant_id: req.params.id,
+                        // reviews: result.rows
+                    // });
+                // })
         } else {
-            client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id],
-                function (err, result1) {
-                    if (err) {
-                        return console.error('error running query', err);
-                    }
-                    let rating = result1.rows[0].rating;
-                    res.status(200).json({
-                        status: 'success',
-                        rating: rating,
-                        restaurant_id: req.params.id,
-                        results: result.rows
-                    });
-                })
+            res.status(200).json({
+                status: 'success',
+                reviews: result.rows
+            });
         }
     })
 });
