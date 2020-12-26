@@ -253,12 +253,16 @@ app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res
         try {
             const buffer = req.file.buffer;
             const restId = req.body.id;
-            const fileName = 'restaurantMainImage/' + restId + '.jpg';
+
+            const imagePath = 'restaurantMainImage/' + restId + '.jpg';
+            const imageLink = 'https://d1ua7nher2b0zf.cloudfront.net/' + imagePath;
+            // console.log(restId)
             // req.file.originalname;
 
             // if buffer undefined!!!!!!!!!!!!!!!!!!!!!!!!!
 
-            await imageUpload(fileName, buffer);
+            await imageUpload(imagePath, buffer);
+            // await client.query('UPDATE "public"."restaurants" SET image_link = $1 where id = $2', [imageLink, id])
 
         } catch (e) {
             res.status(400).send(e)
