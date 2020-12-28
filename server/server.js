@@ -245,6 +245,7 @@ function sortByDecreasing(array) {
     })
     return array
 }
+
 ///////////////////////////////////////////
 
 //upload picture on server
