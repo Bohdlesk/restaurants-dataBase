@@ -10,7 +10,7 @@ const image2base64 = require('image-to-base64');
 const multer = require('multer');
 
 
-const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PGHOST} = process.env;
+const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PGHOST, AWS_LINK_FOR_SERVER} = process.env;
 
 AWS.config.update({
     accessKeyId: AWS_ACCESS_KEY_ID,
@@ -116,7 +116,34 @@ let upload = multer(
 
 
 // get all restaurants
-app.get('/api/v1/restaurants', (req, res) => {
+app.get('/api/v1/restaurants', async (req, res) => {
+    // client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
+    //         if (err) {
+    //             res.status(404).json({
+    //                 status: 'error',
+    //             });
+    //             return console.error('error running query', err);
+    //         } else {
+    //             res.status(200).json({
+    //                 status: 'seccess',
+    //                 restaurants: result.rows,
+    //             })
+    //         }
+    //     }
+    // );
+    try {
+        const result = await client
+            .query('SELECT * FROM "public"."restaurants"');
+        res.status(200).json({
+            status: 'success',
+            restaurants: result.rows,
+        });
+    } catch (e) {
+        res.status(404).json({
+            status: 'error running query',
+        });
+    }
+
 
     // let typeOfSort = req.query.order
     // let paramOfSort = req.query.name
@@ -141,20 +168,7 @@ app.get('/api/v1/restaurants', (req, res) => {
     //         }
     //     }
     // );
-    client.query('SELECT * FROM "public"."restaurants"', function (err, result) {
-            if (err) {
-                res.status(404).json({
-                    status: 'error',
-                });
-                return console.error('error running query', err);
-            } else {
-                res.status(200).json({
-                    status: 'seccess',
-                    restaurants: result.rows,
-                })
-            }
-        }
-    );
+
 
     // if (typeOfSort === 'ASC' || 'DESC') {
 
@@ -253,91 +267,135 @@ app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res
         try {
             const buffer = req.file.buffer;
             const restId = req.body.id;
-
             const imagePath = 'restaurantMainImage/' + restId + '.jpg';
-            const imageLink = 'https://d1ua7nher2b0zf.cloudfront.net/' + imagePath;
-            // console.log(restId)
             // req.file.originalname;
-
-            // if buffer undefined!!!!!!!!!!!!!!!!!!!!!!!!!
-
             await imageUpload(imagePath, buffer);
-            // await client.query('UPDATE "public"."restaurants" SET image_link = $1 where id = $2', [imageLink, id])
-
         } catch (e) {
-            res.status(400).send(e)
+            res.status(400).send({
+                status: 'error'
+            })
         }
     }, (error, req, res, next) => {
-        res.status(400).send({error: error.message})
+        res.status(400).send({
+            error: error.message
+        })
     }
 );
 
 // create a restaurant
 app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 
-        let checker = 0;
-        try {
-            client
-                .query('SELECT * FROM "public"."restaurants"', function (err, result) {
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query', err);
-                    }
+    try {
+        let result = await client
+            .query('SELECT * FROM "public"."restaurants"');
 
-                    for (let i in result.rows) {
-                        if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
-                            checker++;
-                            break;
-                        }
-                    }
-
-                    if (checker > 0) {
-                        console.log('test')
-                        res.status(404).json({
-                            message: 'restaurant with this name in this location is already created'
-                        })
-                    } else if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
-                        res.status(404).json({
-                            message: 'wrong price range value'
-                        })
-                    } else {
-                        client
-                            .query('INSERT INTO "public"."restaurants" (name, location, price_range, website)' +
-                                ' values ($1, $2, $3, $4) RETURNING id',
-                                [req.body.name, req.body.location, req.body.price_range, req.body.website],
-                                async function (err, result) {
-                                    if (err) {
-                                        return console.error('error running query', err);
-                                    }
-
-                                    const restId = result.rows[0].id
-                                    const imagePath = 'restaurantMainImage/' + restId + '.jpg'
-                                    const buffer = req.file.buffer;
-                                    const imageLink = 'https://d1ua7nher2b0zf.cloudfront.net/' + imagePath;
-                                    await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
-                                        'where id = $2', [imageLink, restId], async (err) => {
-                                        if (err) {
-                                            res.status(404).json({
-                                                status: 'error running query',
-                                            });
-                                        }
-                                        await imageUpload(imagePath, buffer)
-                                        res.status(200).json({
-                                            status: 'success',
-                                        });
-                                    })
-                                })
-                    }
-                })
-        } catch (e) {
-            res.status(400).send(e)
+        if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
+            return res.status(404).json({
+                erorr: 'wrong price range value'
+            })
         }
-    }, (error, req, res, next) => {
-        res.status(400).send({error: error.message})
+
+        let restaurantsList = result.rows;
+        for (let i in restaurantsList) {
+            if ((restaurantsList[i].name === req.body.name)
+                && (restaurantsList[i].location === req.body.location)) {
+                return res.status(404).json({
+                    error: 'restaurant with this name in this location is already created'
+                })
+            }
+        }
+
+        result = await client
+            .query('INSERT INTO "public"."restaurants" (name, location, price_range, website)' +
+                ' values ($1, $2, $3, $4) RETURNING id',
+                [req.body.name, req.body.location, req.body.price_range, req.body.website]);
+
+        const restId = result.rows[0].id;
+        const imagePath = 'restaurantMainImage/' + restId + '.jpg';
+        const buffer = req.file.buffer;
+        const imageLink = AWS_LINK_FOR_SERVER + imagePath;
+
+        await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
+            'where id = $2', [imageLink, restId]);
+
+        await imageUpload(imagePath, buffer);
+        return res.status(200).json({
+            status: 'success',
+        });
+    } catch (e) {
+        res.status(400).send({status: 'error'})
     }
-);
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message})
+});
+
+
+////////
+// client
+//     .query('SELECT * FROM "public"."restaurants"', function (err, result) {
+//         if (err) {
+//             res.status(404).json({
+//                 status: 'error',
+//             });
+//             return console.error('error running query', err);
+//         }
+//
+//         for (let i in result.rows) {
+//             if ((result.rows[i].name === req.body.name) && (result.rows[i].location === req.body.location)) {
+//                 checker++;
+//                 break;
+//             }
+//         }
+//
+//
+//         if (checker > 0) {
+//             console.log('test')
+//             res.status(404).json({
+//                 message: 'restaurant with this name in this location is already created'
+//             })
+//         } else if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
+//             res.status(404).json({
+//                 message: 'wrong price range value'
+//             })
+//         } else {
+//             client
+//                 .query('INSERT INTO "public"."restaurants" (name, location, price_range, website)' +
+//                     ' values ($1, $2, $3, $4) RETURNING id',
+//                     [req.body.name, req.body.location, req.body.price_range, req.body.website],
+//                     async function (err, result) {
+//                         if (err) {
+//                             return console.error('error running query', err);
+//                         }
+//
+//                         const restId = result.rows[0].id
+//                         const imagePath = 'restaurantMainImage/' + restId + '.jpg'
+//                         const buffer = req.file.buffer;
+//                         const imageLink = 'https://d1ua7nher2b0zf.cloudfront.net/' + imagePath;
+//                         await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
+//                             'where id = $2', [imageLink, restId], async (err) => {
+//                             if (err) {
+//                                 res.status(404).json({
+//                                     status: 'error running query',
+//                                 });
+//                             }
+//                             await imageUpload(imagePath, buffer)
+//                             res.status(200).json({
+//                                 status: 'success',
+//                             });
+//                         })
+//                     })
+//         }
+//     })
+// } catch
+// (e)
+// {
+//     res.status(400).send(e)
+// }
+// },
+// (error, req, res, next) => {
+//     res.status(400).send({error: error.message})
+// }
+// });
 
 app.get('/api/v1/restaurants/image', async (req, res) => {
     const result = await client
@@ -614,20 +672,20 @@ app.get('/api/v1/restaurants/:id/reviews', (req, res) => {
                 status: 'error',
                 message: 'restaurant reviews is not found'
             })
-        // } else {
-        //     client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id],
-        //         function (err, result1) {
-        //             if (err) {
-        //                 return console.error('error running query', err);
-        //             }
-                    // let rating = result1.rows[0].rating;
-                    // res.status(200).json({
-                    //     status: 'success',
-                        // rating: rating,
-                        // restaurant_id: req.params.id,
-                        // reviews: result.rows
-                    // });
-                // })
+            // } else {
+            //     client.query('SELECT rating FROM "public"."restaurants" where id = $1', [id],
+            //         function (err, result1) {
+            //             if (err) {
+            //                 return console.error('error running query', err);
+            //             }
+            // let rating = result1.rows[0].rating;
+            // res.status(200).json({
+            //     status: 'success',
+            // rating: rating,
+            // restaurant_id: req.params.id,
+            // reviews: result.rows
+            // });
+            // })
         } else {
             res.status(200).json({
                 status: 'success',
