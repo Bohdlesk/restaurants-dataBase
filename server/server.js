@@ -271,12 +271,12 @@ app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res
             // req.file.originalname;
             await imageUpload(imagePath, buffer);
         } catch (e) {
-            res.status(400).send({
+            res.status(404).send({
                 status: 'error'
             })
         }
     }, (error, req, res, next) => {
-        res.status(400).send({
+        res.status(404).send({
             error: error.message
         })
     }
@@ -323,12 +323,12 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
             status: 'success',
         });
     } catch (e) {
-        res.status(400).send({
+        res.status(404).send({
             status: 'error'
         })
     }
 }, (error, req, res, next) => {
-    res.status(400).send({error: error.message})
+    res.status(404).send({error: error.message})
 });
 
 
@@ -430,7 +430,7 @@ app.delete('/api/v1/restaurants/:id', async (req, res) => {
             status: 'success'
         });
     } catch (e) {
-        res.status(400).send({
+        res.status(404).send({
             status: 'error'
         })
     }
@@ -480,20 +480,13 @@ app.get('/api/v1/restaurants/:id', async (req, res) => {
 
     try {
         const id = req.params.id;
-        let result = await client
-            .query('SELECT * FROM "public"."restaurants" where id = $1', [id]);
-        if (result.rowCount === 0) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'restaurant is not found'
-            })
-        }
+        let result = await selectRestaurant(id)
         res.status(200).json({
             status: 'success',
             restaurant: result.rows[0]
         });
     } catch (e) {
-        res.status(400).send({
+        res.status(404).send({
             status: 'error'
         })
     }
@@ -574,20 +567,8 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
 
     try {
         const id = req.params.id;
-        let result = await client
-            .query('SELECT * FROM "public"."restaurants" where id = $1', [id])
 
-        if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
-            return res.status(404).json({
-                erorr: 'wrong price range value'
-            })
-        }
-        if (result.rowCount === 0) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'restaurant is not found'
-            })
-        }
+        await selectRestaurant(id);
 
         if (!(req.body.name === null)) {
             await client
@@ -610,9 +591,11 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
                 .query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
                     id]);
         }
-
+        res.status(200).json({
+            status: 'success',
+        });
     } catch (e) {
-        res.status(400).send({
+        res.status(404).send({
             status: 'error'
         })
     }
@@ -697,58 +680,92 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
 
 
 //post restaurant review
-app.post('/api/v1/restaurants/:id/reviews', (req, res) => {
+app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 
-    let id = req.params.id;
-    client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
-        if (err) {
-            res.status(404).json({
-                status: 'error',
-            });
-            return console.error('error running query 1', err);
+    try {
+        let id = req.params.id;
+
+        if (!((req.body.stars > 0) && (req.body.stars < 6))) {
+            return res.status(404).send({
+                status: 'error'
+            })
         }
 
-        if (result.rows.length === 0) {
-            res.status(404).json({
-                status: 'error',
-                message: 'restaurant is not found'
-            })
-        } else if (!((req.body.stars > 0) && (req.body.stars < 6))) {
-            res.status(404).json({
-                status: 'error',
-                message: 'wrong stars value'
-            })
-        } else {
+        let result = await selectRestaurant(id);
+        await client
+            .query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
+                [id, req.body.name, req.body.feedback_text, req.body.stars]);
 
-            let oldReviewsQuantity = result.rows[0].reviews_quantity;
-            let oldRestaurantRating = result.rows[0].rating;
-            let newReviewsQuantity = oldReviewsQuantity + 1;
+        let oldReviewsQuantity = result.rows[0].reviews_quantity;
+        let oldRestaurantRating = result.rows[0].rating;
+        let newReviewsQuantity = oldReviewsQuantity + 1;
 
-            changeReviewsQuantity(newReviewsQuantity, id)
+        await changeReviewsQuantity(newReviewsQuantity, id)
+        let newReviewRating = req.body.stars;
 
-            let newReviewRating = req.body.stars;
+        let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating) /
+            newReviewsQuantity;
 
-            let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating) /
-                newReviewsQuantity;
+        await changeRestaurantRating(newRestaurantRating, id);
 
-            changeRestaurantRating(newRestaurantRating, id);
+        return res.status(200).json({
+            status: 'success',
+        });
+    } catch (e) {
+        res.status(404).send({
+            status: 'error'
+        })
+    }
+});
+// let id = req.params.id;
+// client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
+//     if (err) {
+//         res.status(404).json({
+//             status: 'error',
+//         });
+//         return console.error('error running query 1', err);
+//     }
+//
+//     if (result.rows.length === 0) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'restaurant is not found'
+//         })
+//     } else if (!((req.body.stars > 0) && (req.body.stars < 6))) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'wrong stars value'
+//         })
+//     } else {
+//
+//         let oldReviewsQuantity = result.rows[0].reviews_quantity;
+//         let oldRestaurantRating = result.rows[0].rating;
+//         let newReviewsQuantity = oldReviewsQuantity + 1;
+//
+//         changeReviewsQuantity(newReviewsQuantity, id)
+//
+//         let newReviewRating = req.body.stars;
+//
+//         let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating) /
+//             newReviewsQuantity;
+//
+//         changeRestaurantRating(newRestaurantRating, id);
+//
+//         client.query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
+//             [id, req.body.name, req.body.feedback_text, req.body.stars], function (err) {
+//                 if (err) {
+//                     res.status(404).json({
+//                         status: 'error',
+//                     });
+//                     return console.error('error running query 3', err);
+//                 }
+//                 res.status(200).json({
+//                     status: 'success',
+//                 })
+//             })
+//     }
+// })
 
-            client.query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
-                [id, req.body.name, req.body.feedback_text, req.body.stars], function (err) {
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query 3', err);
-                    }
-                    res.status(200).json({
-                        status: 'success',
-                    })
-                })
-        }
-    })
-})
-;
 
 //get restaurant reviewS
 app.get('/api/v1/restaurants/:id/reviews', (req, res) => {
@@ -802,28 +819,32 @@ app.get('/api/v1', async (req, res) => {
 });
 
 async function getRestaurantRating(id) {
-    const result = await client
-        .query('SELECT rating FROM "public"."restaurants" where id = $1', [id]);
+    const result = await selectRestaurant(id)
     return result.rows[0].rating;
+}
+
+function selectRestaurant(id) {
+    return client
+        .query('SELECT * FROM "public"."restaurants" where id = $1', [id]);
+}
+
+function checkPriceRange(req) {
+    if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
+        return res.status(404).json({
+            erorr: 'wrong price range value'
+        })
+    }
 }
 
 
 function changeReviewsQuantity(reviewsQuantity, id) {
-    client.query('UPDATE "public"."restaurants" SET reviews_quantity = $1 where id = $2', [reviewsQuantity, id],
-        function (err, result) {
-            if (err) {
-                return console.error('error running query', err);
-            }
-        })
+    return client
+        .query('UPDATE "public"."restaurants" SET reviews_quantity = $1 where id = $2', [reviewsQuantity, id])
 }
 
 function changeRestaurantRating(newRating, id) {
-    client.query('UPDATE "public"."restaurants" SET rating = $1 where id = $2', [newRating, id],
-        function (err, result) {
-            if (err) {
-                return console.error('error running query', err);
-            }
-        })
+    return client
+        .query('UPDATE "public"."restaurants" SET rating = $1 where id = $2', [newRating, id])
 }
 
 
