@@ -323,7 +323,9 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
             status: 'success',
         });
     } catch (e) {
-        res.status(400).send({status: 'error'})
+        res.status(400).send({
+            status: 'error'
+        })
     }
 }, (error, req, res, next) => {
     res.status(400).send({error: error.message})
@@ -370,7 +372,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 //                         const restId = result.rows[0].id
 //                         const imagePath = 'restaurantMainImage/' + restId + '.jpg'
 //                         const buffer = req.file.buffer;
-//                         const imageLink = 'https://d1ua7nher2b0zf.cloudfront.net/' + imagePath;
+//                         const imageLink = AWS_LINK_FOR_SERVER + imagePath;
 //                         await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
 //                             'where id = $2', [imageLink, restId], async (err) => {
 //                             if (err) {
@@ -396,6 +398,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 //     res.status(400).send({error: error.message})
 // }
 // });
+//////////////////////////////////////
 
 app.get('/api/v1/restaurants/image', async (req, res) => {
     const result = await client
@@ -405,74 +408,121 @@ app.get('/api/v1/restaurants/image', async (req, res) => {
 })
 
 // delete restaurant
-app.delete('/api/v1/restaurants/:id', (req, res) => {
-
-    let id = req.params.id;
-
-    client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
-
-        if (err) {
-            res.status(404).json({
-                status: 'error',
-            });
-            return console.error('error running query', err);
-        }
+app.delete('/api/v1/restaurants/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        let result = await client
+            .query('SELECT * FROM "public"."restaurants" where id = $1', [id])
 
         if (result.rows.length === 0) {
-            res.status(404).json({
+            return res.status(404).json({
                 status: 'error',
                 message: 'restaurant is not found'
             })
-        } else {
-            client.query('DELETE FROM "public"."reviews" WHERE rest_id = $1', [id], function (err, result) {
-                if (err) {
-                    res.status(404).json({
-                        status: 'error',
-                    });
-                    return console.error('error running query', err);
-                }
-                client.query('DELETE FROM "public"."restaurants" WHERE id = $1', [id], function (err, result) {
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query', err);
-                    }
-                    res.status(204).json({
-                        status: 'success'
-                    });
-                });
-            });
         }
-    });
+
+        await client
+            .query('DELETE FROM "public"."reviews" WHERE rest_id = $1', [id]);
+        await client
+            .query('DELETE FROM "public"."restaurants" WHERE id = $1', [id]);
+
+        res.status(204).json({
+            status: 'success'
+        });
+    } catch (e) {
+        res.status(400).send({
+            status: 'error'
+        })
+    }
 });
+// let id = req.params.id;
+//
+// client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
+//
+//     if (err) {
+//         res.status(404).json({
+//             status: 'error',
+//         });
+//         return console.error('error running query', err);
+//     }
+//
+//     if (result.rows.length === 0) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'restaurant is not found'
+//         })
+//     } else {
+//         client.query('DELETE FROM "public"."reviews" WHERE rest_id = $1', [id], function (err, result) {
+//             if (err) {
+//                 res.status(404).json({
+//                     status: 'error',
+//                 });
+//                 return console.error('error running query', err);
+//             }
+//             client.query('DELETE FROM "public"."restaurants" WHERE id = $1', [id], function (err, result) {
+//                 if (err) {
+//                     res.status(404).json({
+//                         status: 'error',
+//                     });
+//                     return console.error('error running query', err);
+//                 }
+//                 res.status(204).json({
+//                     status: 'success'
+//                 });
+//             });
+//         });
+//     }
+// });
+///////////////////////////////////////
 
 // get a restaurant (ONE)
 app.get('/api/v1/restaurants/:id', async (req, res) => {
 
-    let id = req.params.id;
-
-    client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
-        if (err) {
-            res.status(404).json({
-                status: 'error',
-            });
-            return console.error('error running query', err);
-        }
-
-        if (result.rows.length === 0) {
-            res.status(404).json({
+    try {
+        const id = req.params.id;
+        let result = await client
+            .query('SELECT * FROM "public"."restaurants" where id = $1', [id]);
+        if (result.rowCount === 0) {
+            return res.status(404).json({
                 status: 'error',
                 message: 'restaurant is not found'
             })
-        } else {
-            res.status(200).json({
-                status: 'success',
-                restaurant: result.rows[0]
-            });
         }
-    });
+        res.status(200).json({
+            status: 'success',
+            restaurant: result.rows[0]
+        });
+    } catch (e) {
+        res.status(400).send({
+            status: 'error'
+        })
+    }
 });
+// let id = req.params.id;
+//
+// client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
+//     if (err) {
+//         res.status(404).json({
+//             status: 'error',
+//         });
+//         return console.error('error running query', err);
+//     }
+//
+//     if (result.rows.length === 0) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'restaurant is not found'
+//         })
+//     } else {
+//         res.status(200).json({
+//             status: 'success',
+//             restaurant: result.rows[0]
+//         });
+//     }
+// });
+/////////////////////////////////////////////
+
+
 //
 // async   function getRestaurantRating(id) {
 //         const result =  await Promise(
@@ -520,85 +570,130 @@ app.get('/api/v1/restaurants/:id', async (req, res) => {
 
 
 // Uppdate restaurants
-app.post('/api/v1/restaurants/:id', (req, res) => {
+app.post('/api/v1/restaurants/:id', async (req, res) => {
 
-    let id = req.params.id;
-    client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
+    try {
+        const id = req.params.id;
+        let result = await client
+            .query('SELECT * FROM "public"."restaurants" where id = $1', [id])
 
-        if (err) {
-            res.status(404).json({
-                status: 'error',
-            });
-            return console.error('error running query', err);
+        if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
+            return res.status(404).json({
+                erorr: 'wrong price range value'
+            })
         }
-
-        if (result.rows.length === 0) {
-            res.status(404).json({
+        if (result.rowCount === 0) {
+            return res.status(404).json({
                 status: 'error',
                 message: 'restaurant is not found'
             })
-        } else if ((req.body.price_range > 5) || (req.body.price_range < 1)) {
-            res.status(404).json({
-                status: 'error',
-                message: 'price_range out of range'
-            })
-        } else {
-            if (!(req.body.name === null)) {
-                client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
-                    id], function (err) {
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query', err);
-                    }
-
-                })
-            }
-            if (!(req.body.location === null)) {
-                client.query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
-                    id], function (err) {
-
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query', err);
-                    }
-
-                })
-            }
-
-            if (!(req.body.price_range === null)) {
-                client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
-                    id], function (err, result) {
-
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query', err);
-                    }
-                });
-            }
-            if (!(req.body.website === null)) {
-                client.query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
-                    id], function (err, result) {
-
-                    if (err) {
-                        res.status(404).json({
-                            status: 'error',
-                        });
-                        return console.error('error running query', err);
-                    }
-                });
-            }
-            res.status(200).json({
-                status: 'success'
-            });
         }
-    });
+
+        if (!(req.body.name === null)) {
+            await client
+                .query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
+                    id]);
+        }
+        if (!(req.body.location === null)) {
+            await client
+                .query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
+                    id]);
+        }
+
+        if (!(req.body.price_range === null)) {
+            await client
+                .query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
+                    id]);
+        }
+        if (!(req.body.website === null)) {
+            await client
+                .query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
+                    id]);
+        }
+
+    } catch (e) {
+        res.status(400).send({
+            status: 'error'
+        })
+    }
 });
+
+
+// client.query('SELECT * FROM "public"."restaurants" where id = $1', [id], function (err, result) {
+//
+//     if (err) {
+//         res.status(404).json({
+//             status: 'error',
+//         });
+//         return console.error('error running query', err);
+//     }
+//
+//     if (result.rows.length === 0) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'restaurant is not found'
+//         })
+//     } else if ((req.body.price_range > 5) || (req.body.price_range < 1)) {
+//         res.status(404).json({
+//             status: 'error',
+//             message: 'price_range out of range'
+//         })
+//     } else {
+//         if (!(req.body.name === null)) {
+//             client.query('UPDATE "public"."restaurants" SET name = $1 where id = $2', [req.body.name,
+//                 id], function (err) {
+//                 if (err) {
+//                     res.status(404).json({
+//                         status: 'error',
+//                     });
+//                     return console.error('error running query', err);
+//                 }
+//
+//             })
+//         }
+//         if (!(req.body.location === null)) {
+//             client.query('UPDATE "public"."restaurants" SET location = $1 where id = $2', [req.body.location,
+//                 id], function (err) {
+//
+//                 if (err) {
+//                     res.status(404).json({
+//                         status: 'error',
+//                     });
+//                     return console.error('error running query', err);
+//                 }
+//
+//             })
+//         }
+//
+//         if (!(req.body.price_range === null)) {
+//             client.query('UPDATE "public"."restaurants" SET price_range = $1 where id = $2', [req.body.price_range,
+//                 id], function (err, result) {
+//
+//                 if (err) {
+//                     res.status(404).json({
+//                         status: 'error',
+//                     });
+//                     return console.error('error running query', err);
+//                 }
+//             });
+//         }
+//         if (!(req.body.website === null)) {
+//             client.query('UPDATE "public"."restaurants" SET website = $1 where id = $2', [req.body.website,
+//                 id], function (err, result) {
+//
+//                 if (err) {
+//                     res.status(404).json({
+//                         status: 'error',
+//                     });
+//                     return console.error('error running query', err);
+//                 }
+//             });
+//         }
+//         res.status(200).json({
+//             status: 'success'
+//         });
+//     }
+// });
 
 
 //post restaurant review
@@ -696,12 +791,21 @@ app.get('/api/v1/restaurants/:id/reviews', (req, res) => {
 });
 
 
-app.get('/api/v1', (req, res) => {
-    console.log(req.query.order)
+app.get('/api/v1', async (req, res) => {
+    const rating = await getRestaurantRating(3202);
+    console.log(rating);
+    // console.log(req.query.order)
     res.status(200).json({
-        status: '404',
+        reait: rating,
+        status: 'test',
     });
 });
+
+async function getRestaurantRating(id) {
+    const result = await client
+        .query('SELECT rating FROM "public"."restaurants" where id = $1', [id]);
+    return result.rows[0].rating;
+}
 
 
 function changeReviewsQuantity(reviewsQuantity, id) {
