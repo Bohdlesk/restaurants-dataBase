@@ -295,7 +295,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 
         result = await client
             .query('INSERT INTO "public"."restaurants" (name, location, price_range, website)' +
-                ' values ($1, $2, $3, $4) RETURNING id',
+                ' values ($1, $2, $3, $4)',
                 [req.body.name, req.body.location, req.body.price_range, req.body.website]);
 
         // const restId = result.rows[0].id;
