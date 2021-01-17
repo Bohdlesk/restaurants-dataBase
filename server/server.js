@@ -309,7 +309,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
         // await imageUpload(imagePath, buffer);
         return res.status(200).json({
             status: 'success',
-            restaurant: result.rows[0]
+            restaurant: result.rows
         });
     } catch (e) {
         res.status(404).send({
