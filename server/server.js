@@ -295,7 +295,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 
         result = await client
             .query('INSERT INTO "public"."restaurants" (name, location, price_range, website)' +
-                ' values ($1, $2, $3, $4)',
+                ' values ($1, $2, $3, $4) returning *',
                 [req.body.name, req.body.location, req.body.price_range, req.body.website]);
 
         // const restId = result.rows[0].id;
@@ -309,7 +309,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
         // await imageUpload(imagePath, buffer);
         return res.status(200).json({
             status: 'success',
-            restaurant: result.rows
+            restaurant: result.rows[0]
         });
     } catch (e) {
         res.status(404).send({
