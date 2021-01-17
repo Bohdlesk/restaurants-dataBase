@@ -131,6 +131,8 @@ app.get('/api/v1/restaurants', async (req, res) => {
     }
 });
 
+
+////////////////////////////////////////////////////////
 // let typeOfSort = req.query.order
 // let paramOfSort = req.query.name
 // if (typeOfSort === '[]asc') {
@@ -182,7 +184,7 @@ app.get('/api/v1/restaurants', async (req, res) => {
 //         })
 
 
-////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 function sortResult(result, typeOfSort, parametrOfSort) {
 
     if (parametrOfSort === 'rating') sortByRating(result, typeOfSort);
@@ -246,7 +248,7 @@ function sortByDecreasing(array) {
     return array
 }
 
-///////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
 
 //upload picture on server
 app.post('/api/v1/restaurants/picture', upload.single('upload'), async (req, res) => {
@@ -296,15 +298,15 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
                 ' values ($1, $2, $3, $4) RETURNING id',
                 [req.body.name, req.body.location, req.body.price_range, req.body.website]);
 
-        const restId = result.rows[0].id;
-        const imagePath = 'restaurantMainImage/' + restId + '.jpg';
-        const buffer = req.file.buffer;
-        const imageLink = AWS_LINK_FOR_SERVER + imagePath;
+        // const restId = result.rows[0].id;
+        // const imagePath = 'restaurantMainImage/' + restId + '.jpg';
+        // const buffer = req.file.buffer;
+        // const imageLink = AWS_LINK_FOR_SERVER + imagePath;
 
-        await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
-            'where id = $2', [imageLink, restId]);
+        // await client.query('UPDATE "public"."restaurants" SET image_link = $1 ' +
+        //     'where id = $2', [imageLink, restId]);
 
-        await imageUpload(imagePath, buffer);
+        // await imageUpload(imagePath, buffer);
         return res.status(200).json({
             status: 'success',
         });
