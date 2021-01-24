@@ -127,7 +127,7 @@ app.get('/api/v1/restaurants', async (req, res) => {
 
         const result = await client
             .query(`SELECT * FROM restaurants ORDER BY ${paramOfSort} ${typeOfSort} NULLS LAST`)
-        setTimeout(() => {
+        await setTimeout(() => {
             res.status(200).json({
                 status: 'success',
                 restaurants: result.rows,
