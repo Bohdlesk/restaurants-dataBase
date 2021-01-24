@@ -118,10 +118,11 @@ let upload = multer(
 // get all restaurants
 app.get('/api/v1/restaurants', async (req, res) => {
     try {
-        let typeOfSort = req.query.order || 'DESC';
+        let typeOfSort = req.query.order;
         let paramOfSort = req.query.name || 'id';
 
         if (typeOfSort === '[]asc') typeOfSort = 'ASC'
+        else typeOfSort = 'DESC'
 
         const result = await client
             .query(`SELECT * FROM restaurants ORDER BY ${paramOfSort} ${typeOfSort} NULLS LAST`)
@@ -147,20 +148,27 @@ app.get('/api/v1/restaurants', async (req, res) => {
 // }
 // qve = 'SELECT * FROM "public"."restaurants" ORDER BY $1~ NULLs FIRST '
 // console.log(typeof (paramOfSort))
-// client.query('SELECT * FROM "public"."restaurants" ORDER BY $1 ',[paramOfSort],  function (err, result) {
-//         if (err) {
-//             res.status(404).json({
-//                 status: 'error',
-//             });
-//             return console.error('error running query', err);
-//         } else {
-//             res.status(200).json({
-//                 status: 'seccess',
-//                 restaurants: result.rows
-//             })
-//         }
+
+// app.get('/test', async (req, res) => {
+//     try {
+//         let typeOfSort = req.query.order
+//         let paramOfSort = req.query.name
+//         if (typeOfSort === '[]asc') {
+//             typeOfSort = 'ASC'
+//         } else typeOfSort = 'DESC'
+//
+//         res.status(200).json({
+//             status: 'success',
+//             restaurants: result.rows
+//         })
+//
+//     } catch (e) {
+//         res.status(404).json({
+//             status: 'error running query',
+//         });
+//         console.error(e)
 //     }
-// );
+// })
 
 
 // if (typeOfSort === 'ASC' || 'DESC') {
