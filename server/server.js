@@ -207,14 +207,6 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
     res.status(404).send({error: error.message})
 });
 
-
-app.get('/api/v1/restaurants/image', async (req, res) => {
-    const result = await client
-        .query('SELECT * FROM "public"."restaurants"');
-
-    console.log(result)
-})
-
 // delete restaurant
 app.delete('/api/v1/restaurants/:id', async (req, res) => {
     try {
@@ -304,7 +296,7 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
 app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 
     try {
-        let id = req.params.id;
+        let restaurantId = req.params.id;
 
         if (!((req.body.stars > 0) && (req.body.stars < 6))) {
             return res.status(404).send({
@@ -312,22 +304,22 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
             })
         }
 
-        let result = await selectRestaurant(id);
+        let result = await selectRestaurant(restaurantId);
         await client
             .query('INSERT INTO "public"."reviews" (rest_id, name, feedback_text, stars) values ($1, $2, $3, $4)',
-                [id, req.body.name, req.body.feedback_text, req.body.stars]);
+                [restaurantId, req.body.name, req.body.feedback_text, req.body.stars]);
 
         let oldReviewsQuantity = result.rows[0].reviews_quantity;
         let oldRestaurantRating = result.rows[0].rating;
         let newReviewsQuantity = oldReviewsQuantity + 1;
 
-        await changeReviewsQuantity(newReviewsQuantity, id)
+        await changeReviewsQuantity(newReviewsQuantity, restaurantId)
         let newReviewRating = req.body.stars;
 
         let newRestaurantRating = (oldReviewsQuantity * oldRestaurantRating + newReviewRating) /
             newReviewsQuantity;
 
-        await changeRestaurantRating(newRestaurantRating, id);
+        await changeRestaurantRating(newRestaurantRating, restaurantId);
 
         return res.status(200).json({
             status: 'success',
@@ -342,8 +334,9 @@ app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 //get restaurant reviewS
 app.get('/api/v1/restaurants/:id/reviews', async (req, res) => {
     try {
-        let id = req.params.id;
-        let result = await selectRestaurant(id);
+        let restaurantId = req.params.id;
+        let result = await client
+            .query('SELECT * FROM reviews WHERE rest_id = $1', [restaurantId])
         return res.status(200).json({
             status: 'success',
             reviews: result.rows
@@ -358,7 +351,7 @@ app.get('/api/v1', async (req, res) => {
     console.log(rating);
     // console.log(req.query.order)
     res.status(200).json({
-        reait: rating,
+        rating,
         status: 'test',
     });
 });
