@@ -118,8 +118,13 @@ let upload = multer(
 // get all restaurants
 app.get('/api/v1/restaurants', async (req, res) => {
     try {
+        let typeOfSort = req.query.order || 'DESC';
+        let paramOfSort = req.query.name || 'id';
+
+        if (typeOfSort === '[]asc') typeOfSort = 'ASC'
+
         const result = await client
-            .query('SELECT * FROM "public"."restaurants"');
+            .query(`SELECT * FROM restaurants ORDER BY ${paramOfSort} ${typeOfSort} NULLS LAST`)
         res.status(200).json({
             status: 'success',
             restaurants: result.rows,
