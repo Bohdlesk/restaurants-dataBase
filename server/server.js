@@ -284,7 +284,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
 
         if (!((req.body.price_range > 0) && (req.body.price_range < 6))) {
             return res.status(404).json({
-                erorr: 'wrong price range value'
+                error: 'wrong price range value'
             })
         }
 
@@ -293,7 +293,7 @@ app.post('/api/v1/restaurants', upload.single('upload'), async (req, res) => {
             if ((restaurantsList[i].name === req.body.name)
                 && (restaurantsList[i].location === req.body.location)) {
                 return res.status(404).json({
-                    error: 'restaurant with this name in this location is already created'
+                    error: 'restaurant with this name / in this location is already created'
                 })
             }
         }
