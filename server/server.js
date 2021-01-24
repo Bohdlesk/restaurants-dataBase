@@ -118,7 +118,6 @@ let upload = multer(
 // get all restaurants
 app.get('/api/v1/restaurants', async (req, res) => {
     try {
-
         let typeOfSort = req.query.order;
         let paramOfSort = req.query.name || 'id';
 
@@ -127,13 +126,10 @@ app.get('/api/v1/restaurants', async (req, res) => {
 
         const result = await client
             .query(`SELECT * FROM restaurants ORDER BY ${paramOfSort} ${typeOfSort} NULLS LAST`)
-        await setTimeout(() => {
-            res.status(200).json({
-                status: 'success',
-                restaurants: result.rows,
-            });
-        }, 2500)
-
+        res.status(200).json({
+            status: 'success',
+            restaurants: result.rows,
+        });
     } catch (e) {
         res.status(404).json({
             status: 'error running query',
