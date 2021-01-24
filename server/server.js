@@ -118,6 +118,7 @@ let upload = multer(
 // get all restaurants
 app.get('/api/v1/restaurants', async (req, res) => {
     try {
+
         let typeOfSort = req.query.order;
         let paramOfSort = req.query.name || 'id';
 
@@ -126,76 +127,19 @@ app.get('/api/v1/restaurants', async (req, res) => {
 
         const result = await client
             .query(`SELECT * FROM restaurants ORDER BY ${paramOfSort} ${typeOfSort} NULLS LAST`)
-        res.status(200).json({
-            status: 'success',
-            restaurants: result.rows,
-        });
+        setTimeout(() => {
+            res.status(200).json({
+                status: 'success',
+                restaurants: result.rows,
+            });
+        }, 2500)
+
     } catch (e) {
         res.status(404).json({
             status: 'error running query',
         });
     }
 });
-
-
-////////////////////////////////////////////////////////
-// let typeOfSort = req.query.order
-// let paramOfSort = req.query.name
-// if (typeOfSort === '[]asc') {
-//     typeOfSort = 'ASC'
-// } else if (typeOfSort === '[]desc') {
-//     typeOfSort = 'DESC'
-// }
-// qve = 'SELECT * FROM "public"."restaurants" ORDER BY $1~ NULLs FIRST '
-// console.log(typeof (paramOfSort))
-
-// app.get('/test', async (req, res) => {
-//     try {
-//         let typeOfSort = req.query.order
-//         let paramOfSort = req.query.name
-//         if (typeOfSort === '[]asc') {
-//             typeOfSort = 'ASC'
-//         } else typeOfSort = 'DESC'
-//
-//         res.status(200).json({
-//             status: 'success',
-//             restaurants: result.rows
-//         })
-//
-//     } catch (e) {
-//         res.status(404).json({
-//             status: 'error running query',
-//         });
-//         console.error(e)
-//     }
-// })
-
-
-// if (typeOfSort === 'ASC' || 'DESC') {
-
-// client.query('SELECT * FROM restaurants ORDER BY rating ASC NULLS FIRST', [paramOfSort],
-//       function (err, result)  {
-//             if (err) {
-//                 res.status(404).json({
-//                     status: 'error',
-//                 });
-//                 return console.error('error running query', err);
-//             }
-//             if (result.rows.length === 0) {
-//                 res.status(404).json({
-//                     status: 'error',
-//                     message: 'restaurant list is empty'
-//                 });
-//             } else {
-//                 res.status(200).json({
-//                     status: 'seccess',
-//                     restaurants: result.rows
-//                 })
-//                 // sortResult(result.rows, typeOfSort, parametrOfSort));
-//             }
-//
-//         })
-
 
 /////////////////////////////////////////////////////////////////////
 function sortResult(result, typeOfSort, parametrOfSort) {
