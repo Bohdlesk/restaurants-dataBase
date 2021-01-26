@@ -292,6 +292,13 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
     }
 });
 
+app.get('/send/massage/', async (req, res) => {
+    return res.status(200).json({
+        status: 'error',
+        massage: 'Случилась ошибка'
+    });
+})
+
 //post restaurant review
 app.post('/api/v1/restaurants/:id/reviews', async (req, res) => {
 
