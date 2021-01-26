@@ -295,7 +295,7 @@ app.post('/api/v1/restaurants/:id', async (req, res) => {
 app.get('/send/massage/', async (req, res) => {
     return res.status(200).json({
         status: 'error',
-        massage: 'Случилась ошибка'
+        massage: 'Случилась ошибка, попробуйте воспользоваться Wi-fi подклчением к сети'
     });
 })
 
