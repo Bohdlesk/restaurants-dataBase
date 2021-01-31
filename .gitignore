@@ -3,3 +3,5 @@ node_modules
 .env
 first-database.iml
 /server/testIf.js
+server
+test.js
