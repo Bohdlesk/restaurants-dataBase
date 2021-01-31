@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser')
-const {connectToDatabase} = require("./db");
+const {connectToDatabase} = require("./dataBase/db");
 
 const getRestaurantsRouter = require('./routes/getRestaurantsList');
 const getRestaurantByIdRouter = require('./routes/getRestaurantById');

@@ -1,6 +1,6 @@
 const express = require('express');
 
-const {getRestaurantsList} = require("../db");
+const {getRestaurantsList} = require("../dataBase/restaurantsQueryes");
 
 const router = express.Router();
 
