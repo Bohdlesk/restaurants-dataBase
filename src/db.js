@@ -31,7 +31,11 @@ async function getRestaurantsList(paramOfSort, typeOfSort) {
     } catch (error) {
         return error;
     }
-
 }
 
-module.exports = {connectToDatabase, getRestaurantsList}
+function getRestaurantById(restaurantId) {
+    return client
+        .query('SELECT * FROM "public"."restaurants" where id = $1', [restaurantId]);
+}
+
+module.exports = {connectToDatabase, getRestaurantsList, getRestaurantById}
