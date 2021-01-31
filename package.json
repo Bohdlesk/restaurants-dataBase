@@ -5,13 +5,15 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "server": "node_modules/.bin/nodemon server.js"
+    "nodemon": "node_modules/.bin/nodemon server.js",
+    "nodemonPre": "nodemon src/bin/www.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.816.0",
+    "body-parser": "^1.19.0",
     "buffer": "^6.0.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
