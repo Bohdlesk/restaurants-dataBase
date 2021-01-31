@@ -20,9 +20,9 @@ app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
 app.use('/api/v1/restaurants', getRestaurantsRouter);
-app.use('api/v1/restaurants', getRestaurantByIdRouter);
-app.use('api/v1/restaurants', createRestaurantRouter);
-app.use('api/v1/restaurants', deleteRestaurantRouter);
+app.use('/api/v1/restaurants', getRestaurantByIdRouter);
+app.use('/api/v1/restaurants', createRestaurantRouter);
+app.use('/api/v1/restaurants', deleteRestaurantRouter);
 
 
 connectToDatabase();
