@@ -1,4 +1,3 @@
-/* eslint-disable camelcase,no-use-before-define */
 import { Request, Response } from 'express';
 import { Restaurant } from '../../models';
 
