@@ -1,5 +1,8 @@
 import createRestaurant from './createRestaurant';
 import getRestaurantsList from './getRestaurantsList';
-import deleteRestaurnt from './deleteRestaurnt';
+import deleteRestaurant from './deleteRestaurnt';
+import getRestaurant from './getRestaurant';
 
-export { createRestaurant, getRestaurantsList, deleteRestaurnt };
+export {
+  createRestaurant, getRestaurantsList, deleteRestaurant, getRestaurant,
+};
