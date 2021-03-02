@@ -1,5 +1,0 @@
-require('dotenv').config();
-
-const {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PGHOST, AWS_LINK_FOR_SERVER} = process.env;
-
-module.exports = {AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PGHOST, AWS_LINK_FOR_SERVER}
