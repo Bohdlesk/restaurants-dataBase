@@ -5,12 +5,12 @@ import {
 import { db } from '../database';
 
 export interface IRestaurant {
-  id?: number,
+  id: number,
   name: string,
   location: string,
   price_range: number,
-  reviews_quantity?: number,
-  rating?: number,
+  reviews_quantity: number,
+  rating: number,
   website?: string | null,
   image_link?: string | null,
 }
