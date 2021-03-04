@@ -26,18 +26,18 @@ class Review extends Model implements IReview {
 }
 
 Review.init({
-  feedback_text: {
-    type: DataTypes.STRING,
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
     allowNull: false,
   },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+  feedback_text: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   rest_id: {
@@ -47,6 +47,10 @@ Review.init({
       model: Restaurant,
       key: 'id',
     },
+  },
+  stars: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
 },
 {
