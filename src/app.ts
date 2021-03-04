@@ -20,7 +20,7 @@ app.get('/', (req: express.Request, res: express.Response) => {
   res.send('hi');
 });
 
-app.use('/api/v1/', apiV1Router);
+app.use('/api/v1', apiV1Router);
 
 // connection to data base
 connectToDataBase();
