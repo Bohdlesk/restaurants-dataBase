@@ -3,10 +3,10 @@ import Review from '../../models/review';
 
 export default async (req: Request, res: Response): Promise<void> => {
   try {
-    const review = await Review.findAll({ where: { rest_id: req.params.id } });
+    const reviews = await Review.findAll({ where: { rest_id: req.params.id } });
     res.status(200).json({
       status: 'success',
-      review,
+      reviews,
     });
   } catch (error) {
     res.status(500).json({
