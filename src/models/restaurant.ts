@@ -15,7 +15,7 @@ export interface IRestaurant {
   image_link?: string | null,
 }
 
-class Restaurant extends Model<IRestaurant> implements IRestaurant {
+class Restaurant extends Model implements IRestaurant {
   public id!: number;
 
   public name!: string;
