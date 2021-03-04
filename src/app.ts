@@ -8,7 +8,7 @@ export const app = express();
 
 // CORS options
 const corsOptions = {
-  origin: 'https://restaurantpetproject.netlify.app/',
+  origin: 'https://restaurantpetproject.netlify.app',
   optionsSuccessStatus: 200,
 };
 
