@@ -6,7 +6,10 @@ import * as middleware from '../middleweares';
 export const restaurantsRouter = Router();
 
 restaurantsRouter.post('/', middleware.upload.single('image'), controllers.createRestaurant);
+
 restaurantsRouter.delete('/:id', controllers.deleteRestaurant);
+
 restaurantsRouter.get('/:id', controllers.getRestaurant);
 restaurantsRouter.get('/', controllers.getRestaurantsList);
+
 restaurantsRouter.put('/:id', controllers.editRestaurant);
